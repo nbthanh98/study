@@ -11,12 +11,17 @@ public class DemoController {
 
     @RequestMapping(value = "/hello", method = RequestMethod.GET)
     public ResponseEntity<String> hello() {
-        return new ResponseEntity<>("heelo", HttpStatus.OK);
+        return new ResponseEntity<>("hello world", HttpStatus.OK);
     }
 
     @RequestMapping(value = "/hello2", method = RequestMethod.GET)
     public ResponseEntity<String> hello2() {
         return new ResponseEntity<>("heelo", HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/hello3", method = RequestMethod.GET)
+    public ResponseEntity<String> hello3() {
+        return new ResponseEntity<>("heelo3", HttpStatus.OK);
     }
 
 }

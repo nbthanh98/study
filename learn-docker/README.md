@@ -414,3 +414,7 @@ Docker Networking gồm có 3 thành phần sau:
 https://techmormo.com/posts/docker-made-easy-2-how-docker-images-work/
 
 https://medium.com/@portainerio/using-vscode-with-portainer-managed-kubernetes-clusters-d87106421705
+
+https://towardsdatascience.com/learn-enough-docker-to-be-useful-b0b44222eef5
+
+https://medium.com/javarevisited/remove-the-if-else-hell-java-7927194bd2e

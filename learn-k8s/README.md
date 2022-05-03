@@ -65,5 +65,4 @@ Trong trường hợp nếu mà `The Scheduler` không tìm được một node 
 
 **5. Túm cái quần của các thành phần trong Master Node (control plane) =))**
 
-
-
+https://blog.devgenius.io/k8s-understand-deployment-2ec96fbcf1eas
