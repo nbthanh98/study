@@ -56,6 +56,7 @@ Docker `bind mount` giúp ta kết nối từ container đến một thư mục 
 Trong phần này thì sẽ tìm hiểu cách tạo Docker volume `implicitly` and `explicitly` sau đó thì học cách khai báo docker volume từ Dockerfile. Học cách view data volume, mount volume vào bên trong container, configs volume từ docker-compose.
 
 **1. Create a Docker Volume Implicitly**
+
 Chúng ta có thê tạo Docker volume bằng cách sử dụng `-v` hoặc là `--volume` khi chạy docker run command.
 
 ```
@@ -73,6 +74,7 @@ docker run -it --rm --name nginx -p 8080:80 -v demo-earthly:/usr/share/nginx/htm
 Hình trên thì ta đã thấy một volume `demo-earthly` đã được tạo ra. Sửa file index.html bên trong container, khi xóa container và chạy lại thì dữ liệu thay đổi trước đó vẫn được giữ.
 
 **2. Create a Docker Volume Explicitly**
+
 Sử dụng `docker volume create` command để tạo docker volume, tạo volume bằng cách này thì có thể thêm option config `volume driver`, còn tạo volume `implicitly` thì sẽ luôn luôn sử dụng `local` driver
 
 ```Docker
@@ -80,6 +82,7 @@ docker volume create --name demo-earthly
 ```
 
 **3. Declare a Docker Volume from Dockerfile**
+
 Volumes có thể được khai báo bên trong Dockerfile sử dụng `VOLUME` statement. Khai báo path mà container sẽ mount vào một Docker volume. Khi chạy containers từ Dockerfile này thì Docker sẽ tạo ra một `anonymous volume` (volume with a unique id as the name) và mount nó vào path được khai bảo ở `VOLUME` statement.
 ![Screenshot](images/2022-05-04_00-15.png)
 
