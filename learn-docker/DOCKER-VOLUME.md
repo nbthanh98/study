@@ -126,6 +126,7 @@ vi /usr/share/nginx/html/index.html
 Giờ thì thử xóa container trên và tạo lại một container ngix mới xem data thay đổi ở bước trên có được giữ hay không?
 ![Screenshot](images/2022-05-04_00-50.png)
 Như ta thấy thì dữ liệu thay đổi ở bước trươc đã biến mất khi tạo container mới. Lý do ở đây là vì mỗi lần tạo container mới thì sẽ lại tạo ra `anonymous volume` mới mà không sử dụng lại volume cũ => dữ liệu bị mất.
+
 **4. Mount a Volume to a Container**
 Ở những VD trên thì là đang sử dụng `-v` hoặc là `--volume` để thực hiên mount volume vào trong containers.
 
