@@ -5,4 +5,14 @@ services:
     ports:
       - 8080:80
     volumes:
-      - ./target:/usr/share/nginx/html
+      - html_files:/usr/share/nginx/html
+  
+  web1:
+    image: nginx:latest
+    ports:
+      - 8081:80
+    volumes:
+      - html_files:/usr/share/nginx/html
+
+volumes:
+  html_files:

@@ -10,7 +10,7 @@ metadata:
   name: hostpath-volume
 spec:
   containers:
-    - image: nginx:alpine
+    - image: nginx:alpinep
       name: web-server
       volumeMounts:
         - name: log # log volume

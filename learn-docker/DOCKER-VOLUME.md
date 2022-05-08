@@ -156,4 +156,11 @@ docker run -it --name=example --mount source=demo-volume,destination=/data ubunt
 ```
 
 **5. Configure a Volume Using docker-compose**
+
 ![Screenshot](images/2022-05-04_01-06.png)
+
+Với hình trên thì thấy là đang khai báo sử dụng volume với `volumes` trong docker-compose, hình trên đang sử dụng `bind mount` (khi mà muốn mount một file hoặc folder từ máy host vào bên trong containers), hình trên là đang muốn mount folder `./target` ở máy host vào bên trong folder `/usr/share/nginx/html` bên trong containers
+
+![Screenshot](images/2022-05-08_15-36.png)
+
+Với hình trên thì đang sử dụng docker-volume với tên volume là `html_files`, volume này sẽ được mount data của cả 2 service `web` và `web1`. Khi docker-compose up thì docker sẽ check xem, nếu volume có tên là `html_files` đã tồn tại hay chưa?, nếu chưa có thì tạo mới, trường hợp có rồi thì sẽ thực hiện mount luôn vào 2 service `web` và `web1`.
