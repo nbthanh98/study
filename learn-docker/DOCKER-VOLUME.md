@@ -164,3 +164,6 @@ Với hình trên thì thấy là đang khai báo sử dụng volume với `volu
 ![Screenshot](images/2022-05-08_15-36.png)
 
 Với hình trên thì đang sử dụng docker-volume với tên volume là `html_files`, volume này sẽ được mount data của cả 2 service `web` và `web1`. Khi docker-compose up thì docker sẽ check xem, nếu volume có tên là `html_files` đã tồn tại hay chưa?, nếu chưa có thì tạo mới, trường hợp có rồi thì sẽ thực hiện mount luôn vào 2 service `web` và `web1`.
+https://iximiuz.com/en/posts/container-networking-is-simple/
+https://medium.com/edureka/docker-networking-1a7d65e89013
+https://dev.to/n00d13/backup-mysql-databases-in-kubernetes-2g6k
