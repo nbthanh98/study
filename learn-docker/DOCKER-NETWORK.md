@@ -1,5 +1,8 @@
 ## Docker network
 
+## Tài liệu tham khảo:
+https://itnext.io/a-beginners-guide-to-networking-in-docker-ca5b822fb935
+
 ### 1. Basic of networking
 
 Thông qua `Docker network` mà các containers có thể nói chuyện được với nhau, từ bên ngoài máy host có thể truy cập được vào containers. Docker network thì đang có 3 loại:
