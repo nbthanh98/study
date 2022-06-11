@@ -18,6 +18,6 @@
        * Quan sát `current state` (trạng thái hiện tại của Cluster).
        * Xác định sự khác biệt giữa `desired state` và `current state`.
        * Thực hiện hành động gì đó để `current state` giống với `desired state`.
-   * `Scheduler`:
+   * `Scheduler`: 
 2. `Data plane (Worker Node)`
    Worker Node chính là nơi mà các application của mình chạy. Worker Node sẽ luông lắng nghe xem có task nào được `Master Node` assign hay không? và thực hiện report lại cho `Master Node`.

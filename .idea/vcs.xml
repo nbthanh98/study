@@ -2,6 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/hands-on-demo/examples" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/hands-on-demo/infinispan-helm-charts" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/jenkins-course" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/learn-k8s/gitops-demo" vcs="Git" />
   </component>

@@ -1,0 +1,305 @@
+- name: FILE_SIZE
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: FILE_SIZE
+
+- name: NOTIFICATION_URI
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: NOTIFICATION_URI
+
+- name: CLOUD_WATCH_NAMESPACE
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: CLOUD_WATCH_NAMESPACE
+
+- name: AWS_SECRET_ACCESS_KEY
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: AWS_SECRET_ACCESS_KEY
+
+- name: STM_PRE_ISSUE_CARD_ACTION
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: STM_PRE_ISSUE_CARD_ACTION
+
+- name: MYSQL_HOST
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: MYSQL_HOST
+
+- name: MYSQL_PARAMS
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: MYSQL_PARAMS
+
+- name: STM_ISSUE_CARD_ACTION
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: STM_ISSUE_CARD_ACTION
+
+- name: PART_ONE_HARD_KEY
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: PART_ONE_HARD_KEY
+
+- name: ACCESS_KEY
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: ACCESS_KEY
+
+- name: MEDIA_URI
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: MEDIA_URI
+
+- name: CLIENT_ID
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: CLIENT_ID
+
+- name: KIENLONG_PAYMENT_HOST
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: KIENLONG_PAYMENT_HOST
+
+- name: REDIS_HOST_3
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: REDIS_HOST_3
+
+- name: DEEP_LINK
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: DEEP_LINK
+
+- name: SOAP_URI_HSM
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: SOAP_URI_HSM
+
+- name: SMARTBANK_URI
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: SMARTBANK_URI
+
+- name: STM_WITHDRAWAL
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: STM_WITHDRAWAL
+
+- name: OPEN_API_URI
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: OPEN_API_URI
+
+- name: DATABASE_USER
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: DATABASE_USER
+
+- name: DATABASE_PASSWORD
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: DATABASE_PASSWORD
+
+- name: STM_WITHDRAWAL_REV
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: STM_WITHDRAWAL_REV
+
+- name: SECURITY_PROVIDER
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: SECURITY_PROVIDER
+
+- name: PART_TWO_ACCESS_KEY
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: PART_TWO_ACCESS_KEY
+
+- name: GRANT_TYPE
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: GRANT_TYPE
+
+- name: ENV
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: ENV
+
+- name: REALM
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: REALM
+
+- name: CLOUD_WATCH_STEP
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: CLOUD_WATCH_STEP
+
+- name: MYSQL_PORT
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: MYSQL_PORT
+
+- name: REDIS_PORT_1
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: REDIS_PORT_1
+
+- name: SCHEDULE_URI
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: SCHEDULE_URI
+
+- name: AWS_ACCESS_KEY_ID
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: AWS_ACCESS_KEY_ID
+
+- name: STM_SERVER_PORT
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: STM_SERVER_PORT
+
+- name: GET_ACCOUNT_BY_CARD_NO
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: GET_ACCOUNT_BY_CARD_NO
+
+- name: MESSAGE_QR_TRANSFER
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: MESSAGE_QR_TRANSFER
+
+- name: REDIS_PORT_3
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: REDIS_PORT_3
+
+- name: REDIS_PORT_2
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: REDIS_PORT_2
+
+- name: EKYC_URI
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: EKYC_URI
+
+- name: KIENLONG_PAYMENT_BRAND
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: KIENLONG_PAYMENT_BRAND
+
+- name: KEYCLOAK_URI
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: KEYCLOAK_URI
+
+- name: REDIS_HOST_2
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: REDIS_HOST_2
+
+- name: KIENLONG_PAYMENT_AUTH
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: KIENLONG_PAYMENT_AUTH
+
+- name: CLIENT_SECRET
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: CLIENT_SECRET
+
+- name: REDIS_HOST_1
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: REDIS_HOST_1
+
+- name: KIENLONG_AUTH
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: KIENLONG_AUTH
+
+- name: PROFILE_URI
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: PROFILE_URI
+
+- name: KIENLONG_URI
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: KIENLONG_URI
+
+- name: KIENLONG_PAYMENT_PORT
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: KIENLONG_PAYMENT_PORT
+
+- name: SOAP_URI_INET
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: SOAP_URI_INET
+
+- name: OPEN_API_SMARTBANK
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: OPEN_API_SMARTBANK
+
+- name: CLOUD_WATCH_REGION
+  valueFrom:
+    configMapKeyRef:
+      name: demo-configmap
+      key: CLOUD_WATCH_REGION
