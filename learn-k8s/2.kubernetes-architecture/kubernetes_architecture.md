@@ -18,6 +18,15 @@
        * Quan sát `current state` (trạng thái hiện tại của Cluster).
        * Xác định sự khác biệt giữa `desired state` và `current state`.
        * Thực hiện hành động gì đó để `current state` giống với `desired state`.
-   * `Scheduler`: 
+   * `Scheduler`: Ông `Scheduler` này sẽ luôn nhìn ông `API Server` để xem có task nào mới hay không?, `Scheduler` sẽ tìm kiếm xem có Node nào phù hợp nhất(Node có healthy không?, số lượng resource còn đủ không?) để có thể thực kiện task. Nếu mà `Schedule` không tìm được Node nào phù hợp, thì task sẽ ở trạng thái `pending`. `Scheduler` KHÔNG chịu trách nhiệm chạy task, `Scheduler` chỉ có trách nhiệm là tìm ra Node nào phù hợp nhất để chạy task.
 2. `Data plane (Worker Node)`
-   Worker Node chính là nơi mà các application của mình chạy. Worker Node sẽ luông lắng nghe xem có task nào được `Master Node` assign hay không? và thực hiện report lại cho `Master Node`.
+   Worker Node chính là nơi mà các application của mình chạy. Worker Node sẽ thực hiện những task như sau:
+
+   * Nhìn xem `API Server` có assign cho task nào mới hay không?.
+   * Thực hiện các task được assign.
+   * Thực hiện báo cáo lại trạng thái của task cho `Control plane (Master Node)` (via the API server).
+
+   ![](images/2022-06-11_22-57.png)
+
+   * **Kubelet**: `Kubelet` được cài ở tất cả các Node (gồm cả Master Node). Khi một Node được join vào cluster thì `Kubelet` sẽ chịu trách nhiệm đăng ký Node mới với Cluster. Nhiệm vụ chính của `Kubelet` đó là nhìn `API Server` để xem có được assign cho task nào không.  
+   // https://www.learnsteps.com/what-is-kubelet-and-what-it-does-basics-on-kubernetes/
