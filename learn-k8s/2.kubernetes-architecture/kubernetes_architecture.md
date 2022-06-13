@@ -81,5 +81,8 @@
    * **Kube-proxy**
 
 
+   * **Kubernetes DNS**
+
+      DNS service sẽ có các thông tin IP của tất cả cotainers và Pod và biết làm sao để có tìm được các Containers và Pods này. Tất cả các service sẽ tự động registered với DNS và tất cả các components trong cluster có thể tìm tất cả các service bằng tên service.
 
    
