@@ -31,7 +31,7 @@ Containers thường sẽ chỉ chạy một process duy nhất PID = 1 (trừ k
 
 Vì trong thực tế chúng ta cũng cần chạy 2 containers (container chạy application và support container). Support container có thể là (side-car container trong service-mesh hoặc là container để xử lý logs,..). Nhưng vì những lý do phía trên khi chạy 2 process trong 1 container, nên mình nghĩ rằng Kubernetes mới đẻ ra thêm một ông là `Pod`, ông `Pod` này sẽ wrap 1 hoặc nhiều container và deploy trên 1 Kubernetes. Các containers trong một Pod sẽ chia sẻ `Pod environment` (This includes things like IPC namespace, shared memory, volumes, network stack and more).
 
-**1.2.3 Define Pod**
+### **1.3 Define Pod**
 
 Pod được define trong file yaml, vd dưới thì đang chạy 1 container image: `nginx:1.14.2`.
 ```yaml
@@ -49,7 +49,15 @@ spec:
     ports:
     - containerPort: 80
 ```
-Giờ thì deploy Pod lên Kubernetes:
+### **1.4 Deploy Pod**
+
+To deploy a Pod to a Kubernetes cluster you define it in a manifest file and POST that manifest file to the API
+Server. The control plane verifies the configuration of the YAML file, writes it to the cluster store as a record of
+intent, and the scheduler deploys it to a healthy node with enough available resources. This process is identical
+for single-container Pods and multi-container Pods.
+
+![](images/6.png)
+
 ```Kubernetes
 kubectl apply -f single-container-pod.yaml
 
@@ -63,7 +71,12 @@ kubectl get po
 NAME    READY   STATUS    RESTARTS   AGE
 nginx   1/1     Running   0          11s
 ```
-**1.2.4 Chạy nhiều containers trong một Pod**
+
+### **1.5 Pod lifecycle**
+
+
+
+### **1.6 Chạy nhiều containers trong một Pod**
 
 1. **Introduction**
 
@@ -149,7 +162,57 @@ nginx   1/1     Running   0          11s
         </body>
         </html>
         ```
-https://www.mirantis.com/blog/multi-container-pods-and-container-communication-in-kubernetes/
-https://medium.com/bb-tutorials-and-thoughts/understanding-multi-container-pods-12f5780f3956
+    - **Demo containers share volumes**
+      
+      Các containers trong cùng một Pod sẽ chia sẻ Volume, volume này sẽ có linetime giống với Pod, điều này có nghĩa là Volume này sẽ chỉ tồn tại khi Pod còn tồn tại, nếu Pod bị xóa đi vì một lý do nào đó thì Volume cũng sẽ bị xóa, khi Pod được tạo lại thì volume cũng sẽ được tạo mới.
 
-https://medium.com/bb-tutorials-and-thoughts/understanding-multi-container-pods-12f5780f3956
+      ```yaml
+      apiVersion: v1
+      kind: Pod
+      metadata:
+        name: mc1
+      spec:
+        containers:
+        - name: 1st
+          image: nginx
+          volumeMounts:
+          - name: html
+            mountPath: /usr/share/nginx/html
+        - name: 2nd
+          image: debian
+          volumeMounts:
+          - name: html
+            mountPath: /share-volume
+          command: ["/bin/sh", "-c"]
+          args:
+            - while true; do
+                mkdir -p /share-volume/;
+                echo "Container 2 write $(date +%F_%H-%M-%S)">> /share-volume/index.html;
+                sleep 10000;
+              done
+        volumes:
+        - name: html
+          emptyDir: {}
+      ```
+      ![](images/5.png)
+
+      File yaml trên, define một volume có tên là `html` và kiểu là `emptyDir` (`emptyDir` là loại volume sẽ tồn tại trong thời gian Pod tồn tại, volume này khi khởi tạo sẽ là một folder rỗng, volume này được tạo khi Pod được assign cho Node).
+
+      Đầu tiên là chạy `container`: 1st (image: nginx:latest), container này sẽ dùng volume tên là `html` để mount vào folder `/usr/share/nginx/html` trong container. Containers thứ 2 tên `2nd` (image: debian:latest), container này dùng volume tên `html` để mount vào folder `/share-volume` trong container.
+
+      Cả 2 containers `1st` và `2nd` đều dùng chung volume là `html` nên là đoan:
+      ```
+      args:
+        - while true; do
+            mkdir -p /share-volume/;
+            echo "Container 2 write $(date +%F_%H-%M-%S)">> /share-volume/index.html;
+            sleep 10000;
+          done
+      ```
+      Mình có thắc mắc là vì sao mình chỉ tạo file `index.html` ở folder `/share-volume` và bên trong container `2nd` thôi nhưng bên trong container `1st` lại có file `index.html` ở folder `/usr/share/nginx/html` nhỉ?. Đó là vì cả 2 containers đều dùng chung 1 volume tên `html`, Khi container `2nd` tạo file `index.html` thì lúc này bên trong volume `html` cũng sẽ có file `index.html`, sau đó container `2nd` mount lại vào folder `/usr/share/nginx/html` thì container `2nd` đã có file `index.html`.
+
+## Nguồn tham khảo:
+
+- https://linchpiner.github.io/k8s-multi-container-pods.html
+
+- https://medium.com/bb-tutorials-and-thoughts/understanding-multi-container-pods-12f5780f3956
