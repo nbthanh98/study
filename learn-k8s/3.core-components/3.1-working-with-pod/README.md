@@ -63,7 +63,8 @@ spec:
 - (7) `Etcd` sẽ trả về response cho `API Server` rằng có lưu thành công hay không?
 - (8) Lúc này thì `API Server` sẽ giao tiếp với `kubelet` để thực hiên Deploy Pod trên `Worker-node-2`.
 - (9) `Kubelet` cũng sẽ không trực tiếp deploy Pod và nó sẽ hướng dẫn cho `Container runtime` cách để có thể deploy Pod và report lại trạng thái của Pod cho `API-Server`.
-   ```
+- Câu hỏi ở đây là: Nếu mà Pod vì một lý do nào đó mà bị delete, vậy thì kubernetes sẽ phản ứng thế nào? (Đó là tác dụng của `controller-manager` sẽ tìm hiểu sau).   
+  ```
    Events:
    Type    Reason     Age   From               Message
    ----    ------     ----  ----               -------
