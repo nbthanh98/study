@@ -49,34 +49,53 @@ spec:
     ports:
     - containerPort: 80
 ```
-### **1.4 Deploy Pod**
+### **1.4 Cách mà Kubernetes tạo Pod**
 
-To deploy a Pod to a Kubernetes cluster you define it in a manifest file and POST that manifest file to the API
-Server. The control plane verifies the configuration of the YAML file, writes it to the cluster store as a record of
-intent, and the scheduler deploys it to a healthy node with enough available resources. This process is identical
-for single-container Pods and multi-container Pods.
+![](images/9.png)
 
-![](images/6.png)
+- (1) Đầu tiên là cần define Pod YAML manifest, thực hiện gửi POST request đến `API Server`, lúc này `API Server` sẽ thực hiện validate YAML file, authen và author user đang tương tác với cluster (check xem user này có được tương tác với loại resource hay không?).
+- (2) Sau khi `API-Server` validate, authen, author thì sẽ lưu content pod manifest vào `etcd` (một loại data store, key-value, lưu trạng thái `desired state` của cluster ).
+- (3) `Etcd` sẽ trả về response cho `API Server` rằng có lưu thành công hay không?
+- (4) `API Server` sẽ trả về cho `User` rằng đã created `Pod`. VD: `pod/mc1 created`
+- `Scheduler` sẽ luôn hỏi `API Server` rằng có cái workload gì cần deploy hay không? (mỗi 5s). Và rồi `Scheduler` đã có task là deploy một cái `Pod`. Nhiệm vụ của `Scheduler` sẽ là chọn ra một `Worker Node` phù hợp nhất để deploy Pod dựa vào một số các tiêu trí như (Node healthy, cpu, memoty,..).
+- (5) Sau khi được một `Worker Node` vd là `Worker-node-2` để deploy Pod. `Scheduler` sẽ không trực tiếp deploy Pod lên `worker-node-2` mà sẽ report lại cho `API Server` rằng "À cái Pod kia nên được deploy ở trên worker-node-2 đó :D".
+- (6) Sau khi được `Scheduler` report là nên deploy Pod ở `Worker-node-2` thì `API Server` cũng sẽ không deploy Pod ngay mà sẽ thực hiện update lại Object Pod ở bước (2).
+- (7) `Etcd` sẽ trả về response cho `API Server` rằng có lưu thành công hay không?
+- (8) Lúc này thì `API Server` sẽ giao tiếp với `kubelet` để thực hiên Deploy Pod trên `Worker-node-2`.
+- (9) `Kubelet` cũng sẽ không trực tiếp deploy Pod và nó sẽ hướng dẫn cho `Container runtime` cách để có thể deploy Pod và report lại trạng thái của Pod cho `API-Server`.
+   ```
+   Events:
+   Type    Reason     Age   From               Message
+   ----    ------     ----  ----               -------
+   Normal  Scheduled  6s    default-scheduler  Successfully assigned default/mc1 to nbt
+   Normal  Pulling    6s    kubelet            Pulling image "nginx"
+   Normal  Pulled     4s    kubelet            Successfully pulled image "nginx" in 2.214132838s
+   Normal  Created    4s    kubelet            Created container 1st
+   Normal  Started    4s    kubelet            Started container 1st
+   Normal  Pulling    4s    kubelet            Pulling image "debian"
+   Normal  Pulled     1s    kubelet            Successfully pulled image "debian" in 2.202111209s
+   Normal  Created    1s    kubelet            Created container 2nd
+   Normal  Started    1s    kubelet            Started container 2nd
+   ```
+   ```
+   kubectl apply -f single-container-pod.yaml
 
-```Kubernetes
-kubectl apply -f single-container-pod.yaml
-
-# Kiểm tra trạng thái của Pod:
-kubectl get po
-NAME    READY   STATUS              RESTARTS   AGE
-nginx   0/1     ContainerCreating   0          8s
-
-# Pod sau khi deploy thành công:
-kubectl get po
-NAME    READY   STATUS    RESTARTS   AGE
-nginx   1/1     Running   0          11s
-```
+   # Kiểm tra trạng thái của Pod:
+   kubectl get po
+   NAME    READY   STATUS              RESTARTS   AGE
+   nginx   0/1     ContainerCreating   0          8s
+   
+   # Pod sau khi deploy thành công:
+   kubectl get po
+   NAME    READY   STATUS    RESTARTS   AGE
+   nginx   1/1     Running   0          11s
+  ```
 
 ### **1.5 Pod lifecycle**
 
+![](images/7.png)
 
-
-### **1.6 Chạy nhiều containers trong một Pod**
+### **1.7 Chạy nhiều containers trong một Pod**
 
 1. **Introduction**
 
