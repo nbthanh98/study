@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: rc-demo
+spec:
+  replicas: 4                        # số lượng Pod mong muốn.
+  selector:
+    app: label-pod                   # K8s sẽ tìm được Pods thông qua labels
+                                     # để thực hiện manager Pods (đảm bảo số lượng Pod).
+  
+  # Đây là phần mô tả cho Pod
+  template:
+    metadata:
+      name: demo-liveness-probe       # Tên Pod.
+      labels:
+        app: label-pod                # Tên label của Pod.
+        layer: backend
+    spec:
+      containers:
+        - name: demo-liveness-probe   # Tên container.
+          image: thanhnb1/demo:latest
+          ports:
+            - containerPort: 8080

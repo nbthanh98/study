@@ -192,3 +192,173 @@ Nên luôn luôn define livenessProbe vì Kubernetes sẽ không có cách nào 
 - *KEEPING PROBES LIGHT*
 
     `LivenessProbe` API thì nên đơn giản thôi, chỉ cần trả về responseCode=200 là được. Nếu mà `LivenessProbe` API trả về response lâu quá thì cũng ảnh hưởng đến việc Kubernetes mất nhiều thời gian đển biết service có healthy hay không? để kill container và re-start container.
+
+## **3. Creating a ReplicationController**
+
+Application được wraper bởi Pod trong Kubernetes. Giả sử Pod bị vấn đề gì đó mà bị xóa đi thì Kubernetes làm sao để có thể tạo lại Pod?, và làm sao để Kubernetes có thể  đảm bảo được số lượng Pod trên Cluster?. `ReplicationController` dùng để làm những điều trên.
+
+```yaml
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: rc-demo
+spec:
+  replicas: 3                        # số lượng Pod mong muốn.
+  selector:
+    app: label-pod                   # K8s sẽ tìm được Pods thông qua labels
+                                     # để thực hiện manager Pods (đảm bảo số lượng Pod).
+  
+  # Đây là phần mô tả cho Pod
+  template:
+    metadata:
+      name: demo-liveness-probe       # Tên Pod.
+      labels:
+        app: label-pod                # Tên label của Pod.
+    spec:
+      containers:
+        - name: demo-liveness-probe   # Tên container.
+          image: thanhnb1/demo:latest
+          ports:
+            - containerPort: 8080
+```
+
+```
+kubectl apply -f replication-controller.yaml
+
+kubectl get po
+NAME                  READY   STATUS             RESTARTS         AGE
+rc-demo-q6hz5         1/1     Running            0                19s
+rc-demo-mjp6n         1/1     Running            0                19s
+rc-demo-n5gq5         1/1     Running            0                19s
+
+# Thực hiện xóa Pod `po/rc-demo-mjp6n`, nhìn các pods thì thấy pod `rc-demo-mjp6n` đang bị xóa đi, và có một Pod `rc-demo-ntbzn` đang được tạo mới.
+
+kubectl delete po/po/rc-demo-mjp6n
+pod "po/rc-demo-mjp6n" deleted
+
+rc-demo-mjp6n         1/1     Terminating        0                4m58s
+rc-demo-ntbzn         0/1     Pending            0                0s
+rc-demo-ntbzn         0/1     Pending            0                0s
+rc-demo-ntbzn         0/1     ContainerCreating   0                0s
+rc-demo-mjp6n         1/1     Terminating         0                4m58s
+rc-demo-mjp6n         0/1     Terminating         0                4m58s
+rc-demo-ntbzn         0/1     ContainerCreating   0                0s
+rc-demo-mjp6n         0/1     Terminating         0                4m58s
+rc-demo-mjp6n         0/1     Terminating         0                4m58s
+rc-demo-ntbzn         1/1     Running
+
+# Kubernetes sẽ luôn đảm bảo số lượng Pods mong muốn thông qua `ReplicationController`.
+kubectl get po
+NAME                  READY   STATUS             RESTARTS        AGE
+rc-demo-n5gq5         1/1     Running            0               9m19s
+rc-demo-pwjv5         1/1     Running            0               8m41s
+rc-demo-ntbzn         1/1     Running            0               4m21s
+```
+Khi thực hiện apply file yaml trên thì Kubernetes sẽ tạo một object `ReplicationController` có tên là `rc-demo`, số lượng Pod mong muốn là 3, label để có thể select được Pod là: `label-pod` (label này phải giống với label của Pod). Khi mà số lượng Pod trên Kubernetes không đủ số lượng = 3, thì Kubernetes sẽ thực hiện tạo mới Pod theo phần `pod template`.
+
+![](images/2.png)
+
+**Xem thông tin về `ReplicationController`**
+```
+kubectl get rc
+NAME      DESIRED   CURRENT   READY   AGE
+rc-demo   4         4         4       28m
+```
+**Demo `ReplicationController` select labels**
+
+```
+kubectl get po --show-labels
+NAME                  READY   STATUS             RESTARTS         AGE     LABELS
+rc-demo-q5vh9         1/1     Running            0                57m     app=label-pod,layer=backend
+rc-demo-rk4t2         1/1     Running            0                59m     app=label-pod
+rc-demo-pwjv5         1/1     Running            0                83m     app=label-pod
+rc-demo-jr992         1/1     Running            0                3m38s   app=label-pod,layer=backend
+rc-demo-sk9ln         1/1     Running            0                3m38s   app=label-pod,layer=backend
+rc-demo-z4sp8         1/1     Running            0                3m38s   app=label-pod,layer=backend
+
+-----------------------------------------------------------------------------------------------------
+
+kubectl  describe rc/rc-demo
+Name:         rc-demo
+Namespace:    default
+Selector:     app=label-pod,layer=backend
+Labels:       app=label-pod
+Annotations:  <none>
+Replicas:     4 current / 4 desired
+Pods Status:  4 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=label-pod
+           layer=backend
+  Containers:
+   demo-liveness-probe:
+    Image:        thanhnb1/demo:latest
+    Port:         8080/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Events:           <none>
+
+--------------------------------------------------------------------------------------------------
+# Thực hiện xóa các Pod có labels: `app=label-pod`. VD pod: rc-demo-rk4t2
+
+kubectl get po  --show-labels
+NAME                  READY   STATUS             RESTARTS         AGE   LABELS
+rc-demo-q5vh9         1/1     Running            0                68m   app=label-pod,layer=backend
+rc-demo-pwjv5         1/1     Running            0                93m   app=label-pod
+rc-demo-jr992         1/1     Running            0                14m   app=label-pod,layer=backend
+rc-demo-sk9ln         1/1     Running            0                14m   app=label-pod,layer=backend
+rc-demo-z4sp8         1/1     Running            0                14m   app=label-pod,layer=backend
+
+=> Lúc này thì chỉ còn lại 1 Pod có labels: `app=label-pod`, và `ReplicationController` sẽ không tạo lại Pod vì `ReplicationController` và `Pod` đang không math labels với nhau. Để mà math label thì sẽ là điều kiện && đứng từ phía của `ReplicationController`.
+```
+Khi thực hiện `--show-labels` thì thấy đang có 3 pod (`app=label-pod`) và 4 Pod (`app=label-pod,layer=backend`). Vì là `ReplicationController` đang có `Selector:     app=label-pod,layer=backend` nên chỉ có 4 Pod (`app=label-pod,layer=backend`) là được manager bởi `ReplicationController`.
+
+```
+kubectl get po --show-labels
+NAME                  READY   STATUS             RESTARTS         AGE   LABELS
+rc-demo-q5vh9         1/1     Running            0                74m   app=label-pod,layer=backend
+rc-demo-jr992         1/1     Running            0                20m   app=label-pod,layer=backend
+rc-demo-sk9ln         1/1     Running            0                20m   app=label-pod,layer=backend
+rc-demo-pwjv5         1/1     Running            0                99m   app=label-pod
+
+---------------------------------------------------------------------------------------------------
+kubectl describe rc/rc-demo
+Name:         rc-demo
+Namespace:    default
+Selector:     app=label-pod
+Labels:       app=label-pod
+Annotations:  <none>
+Replicas:     4 current / 4 desired
+Pods Status:  4 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=label-pod
+           layer=backend
+  Containers:
+   demo-liveness-probe:
+    Image:        thanhnb1/demo:latest
+    Port:         8080/TCP
+    Host Port:    0/TCP
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Events:
+  Type    Reason            Age    From                    Message
+  ----    ------            ----   ----                    -------
+  Normal  SuccessfulDelete  3m54s  replication-controller  Deleted pod: rc-demo-z4sp8
+----------------------------------------------------------------------------------------
+
+kubectl delete po/rc-demo-pwjv5
+pod "rc-demo-pwjv5" deleted
+
+---------------------------------------------------------------------------------------
+
+kubectl get po --show-labels
+NAME                  READY   STATUS    RESTARTS       AGE   LABELS
+rc-demo-q5vh9         1/1     Running   0              79m   app=label-pod,layer=backend
+rc-demo-jr992         1/1     Running   0              25m   app=label-pod,layer=backend
+rc-demo-sk9ln         1/1     Running   0              25m   app=label-pod,layer=backend
+rc-demo-fz7jp         1/1     Running   0              7s    app=label-pod,layer=backend
+
+`ReplicationController` thì đang có label `Selector: app=label-pod` vẫn match được với Pod (app=label-pod,layer=backend), nên khi thực hiện xóa Pod `po/rc-demo-pwjv5` thì sẽ có Pod mới được tạo để đảm bảo số lương Pod như mong muốn.
+```
