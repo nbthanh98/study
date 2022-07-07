@@ -193,7 +193,7 @@ Nên luôn luôn define livenessProbe vì Kubernetes sẽ không có cách nào 
 
     `LivenessProbe` API thì nên đơn giản thôi, chỉ cần trả về responseCode=200 là được. Nếu mà `LivenessProbe` API trả về response lâu quá thì cũng ảnh hưởng đến việc Kubernetes mất nhiều thời gian đển biết service có healthy hay không? để kill container và re-start container.
 
-## **3. Creating a ReplicationController**
+## **4. Creating a ReplicationController**
 
 Application được wraper bởi Pod trong Kubernetes. Giả sử Pod bị vấn đề gì đó mà bị xóa đi thì Kubernetes làm sao để có thể tạo lại Pod?, và làm sao để Kubernetes có thể  đảm bảo được số lượng Pod trên Cluster?. `ReplicationController` dùng để làm những điều trên.
 
@@ -361,4 +361,218 @@ rc-demo-sk9ln         1/1     Running   0              25m   app=label-pod,layer
 rc-demo-fz7jp         1/1     Running   0              7s    app=label-pod,layer=backend
 
 `ReplicationController` thì đang có label `Selector: app=label-pod` vẫn match được với Pod (app=label-pod,layer=backend), nên khi thực hiện xóa Pod `po/rc-demo-pwjv5` thì sẽ có Pod mới được tạo để đảm bảo số lương Pod như mong muốn.
+```
+## **4.1 Changing the pod template**
+
+* **Flow của việc thay đổi podTemplate**:
+
+  ![](images/10.png)
+
+* **Demo**
+  ```yaml
+  apiVersion: v1
+  kind: ReplicationController
+  metadata:
+    name: rc-demo
+  spec:
+    replicas: 4                        # số lượng Pod mong muốn.
+    selector:
+      app: label-pod                   # K8s sẽ tìm được Pods thông qua labels
+                                       # để thực hiện manager Pods (đảm bảo số lượng Pod).
+
+    # Đây là phần mô tả cho Pod
+    template:
+      metadata:
+        name: demo-liveness-probe       # Tên Pod.
+        labels:
+          app: label-pod                # Tên label của Pod.
+          layer: backend
+      spec:
+        containers:
+          - name: demo-liveness-probe   # Tên container.
+            image: thanhnb1/demo:latest
+            ports:
+              - containerPort: 8080
+
+  kubectl apply -f replication-controller.yaml
+  kubectl get po 
+  NAME            READY   STATUS    RESTARTS   AGE
+  rc-demo-bvvqv   1/1     Running   0          25s
+  rc-demo-lfqcz   1/1     Running   0          25s
+  rc-demo-trzv2   1/1     Running   0          25s
+  rc-demo-qzzjk   1/1     Running   0          25s
+
+  # Giờ thử update Pod template (thay đổi image)
+  kubectl edit rc/rc-demo
+  replicationcontroller/rc-demo edited
+
+  Name:         rc-demo
+  Namespace:    default
+  Selector:     app=label-pod
+  Labels:       app=label-pod
+                layer=backend
+  Annotations:  <none>
+  Replicas:     4 current / 4 desired
+  Pods Status:  4 Running / 0 Waiting / 0 Succeeded / 0 Failed
+  Pod Template:
+    Labels:  app=label-pod
+             layer=backend
+    Containers:
+     demo-liveness-probe:
+      Image:        thanhnb1/demo:v2 # Đổi từ latest sang v2.
+      Port:         8080/TCP
+      Host Port:    0/TCP
+      Environment:  <none>
+      Mounts:       <none>
+    Volumes:        <none>
+  Events:
+    Type    Reason            Age   From                    Message
+    ----    ------            ----  ----                    -------
+    Normal  SuccessfulCreate  2m5s  replication-controller  Created pod: rc-demo-f6rgx
+    Normal  SuccessfulCreate  2m5s  replication-controller  Created pod: rc-demo-4mmzv
+    Normal  SuccessfulCreate  2m5s  replication-controller  Created pod: rc-demo-fw9k4
+    Normal  SuccessfulCreate  2m5s  replication-controller  Created pod: rc-demo-c84jm
+
+  # Nhưng mà khi thực hiện get pods thì các Pod vẫn không thay đổi image mới.
+  kubectl get po
+  NAME            READY   STATUS    RESTARTS   AGE
+  rc-demo-fw9k4   1/1     Running   0          3m49s
+  rc-demo-f6rgx   1/1     Running   0          3m49s
+  rc-demo-c84jm   1/1     Running   0          3m49s
+  rc-demo-4mmzv   1/1     Running   0          3m49s
+
+  # Thực hiện describe po/
+  Name:         rc-demo-fw9k4
+  Namespace:    default
+  Priority:     0
+  Node:         nbt/192.168.1.123
+  Start Time:   Thu, 07 Jul 2022 22:57:53 +0700
+  Labels:       app=label-pod
+                layer=backend
+  Annotations:  cni.projectcalico.org/containerID: 6f989da9ccd4fa9fa8f3f6251d73be2c7d2e158434a7e9be3b4a57c7fbc23160
+                cni.projectcalico.org/podIP: 10.1.28.127/32
+                cni.projectcalico.org/podIPs: 10.1.28.127/32
+  Status:       Running
+  IP:           10.1.28.127
+  IPs:
+    IP:           10.1.28.127
+  Controlled By:  ReplicationController/rc-demo
+  Containers:
+    demo-liveness-probe:
+      Container ID:   containerd://1ca180f334fa99f23e21efc340e3b054f5fa0cf61553d3e733d0af5ceb68210c
+      Image:          thanhnb1/demo:latest      # vẫn thấy đang dùng image cũ, không phải dùng image thanhnb1/demo:v2 như đã sửa.
+      Image ID:       docker.io/thanhnb1/demo@sha256:44ae04acedb6c38ef8a80320af17071512be6a6d843e7c5b9014c2873a21dfa1
+      Port:           8080/TCP
+      Host Port:      0/TCP
+      State:          Running
+        Started:      Thu, 07 Jul 2022 22:57:56 +0700
+
+  # Để mà các Pod ăn được image mới (thanhnb1/demo:v2) thì cần phải xóa các Pod cũ đi, để khi các Pod mới được tạo sẽ ăn theo PodTemplate mới như đã update.
+
+  # Xóa Pod rc-demo-fw9k4
+  kubectl delete po/rc-demo-fw9k4
+  pod "rc-demo-fw9k4" deleted
+
+  # Kiểm tra lại Pod mới.
+
+  kubectl get po
+  NAME            READY   STATUS    RESTARTS   AGE
+  rc-demo-f6rgx   1/1     Running   0          8m23s
+  rc-demo-c84jm   1/1     Running   0          8m23s
+  rc-demo-4mmzv   1/1     Running   0          8m23s
+  rc-demo-kvck5   1/1     Running   0          6s
+
+  kubectl describe po/rc-demo-kvck5
+
+  Name:         rc-demo-kvck5
+  Namespace:    default
+  Priority:     0
+  Node:         nbt/192.168.1.123
+  Start Time:   Thu, 07 Jul 2022 23:06:32 +0700
+  Labels:       app=label-pod
+                layer=backend
+  Annotations:  cni.projectcalico.org/containerID: 8e2a28ad9041deae7a435236f8ebc58faf0db959377245061619c7369a929c7e
+                cni.projectcalico.org/podIP: 10.1.28.97/32
+                cni.projectcalico.org/podIPs: 10.1.28.97/32
+  Status:       Running
+  IP:           10.1.28.97
+  IPs:
+    IP:           10.1.28.97
+  Controlled By:  ReplicationController/rc-demo
+  Containers:
+    demo-liveness-probe:
+      Container ID:   containerd://04a0f75bca7b618f88c3b4fe85edcee9981a2e29e0b214c1417efcc2a4fa5686
+      Image:          thanhnb1/demo:v2        # Đã thấy ăn image mới.
+      Image ID:       docker.io/thanhnb1/demo@sha256:ded54c584e2ca5b4c39c231bc85a8ad50d2b0fab1e9c07686c5a78f26fbf7de2
+      Port:           8080/TCP
+      Host Port:      0/TCP
+  ```
+  `ReplicationController` có thể update được `podTemplate`, nhưng các Pod sẽ không ăn được luôn `podTemplate` mà cần phải xóa các Pod cũ, để khi tạo lại các Pod mới thì các Pod mới sẽ tạo theo `podTemplate` đã được update trước đó. Cách update này vẫn hơi tù, nhưng sẽ có cách update ngon hơn (Sẽ tìm hiểu sau).
+
+## **4.2 S CALING UP OR DOWN A R EPLICATION C ONTROLLER**
+
+```shell
+kubectl scale rc/rc-demo --replicas=10
+
+kubectl get po 
+NAME            READY   STATUS              RESTARTS   AGE
+rc-demo-f6rgx   1/1     Running             0          21m
+rc-demo-c84jm   1/1     Running             0          21m
+rc-demo-4mmzv   1/1     Running             0          21m
+rc-demo-kvck5   1/1     Running             0          13m
+rc-demo-g529s   0/1     ContainerCreating   0          3s
+rc-demo-rzpm6   0/1     ContainerCreating   0          3s
+rc-demo-7lb9t   0/1     ContainerCreating   0          3s
+rc-demo-g6dr8   0/1     ContainerCreating   0          3s
+rc-demo-4xr45   0/1     ContainerCreating   0          3s
+rc-demo-xvncw   0/1     ContainerCreating   0          3s
+
+kubectl scale rc/rc-demo --replicas=2
+
+kubectl get po 
+NAME            READY   STATUS        RESTARTS   AGE
+rc-demo-f6rgx   1/1     Running       0          22m
+rc-demo-4mmzv   1/1     Running       0          22m
+rc-demo-7lb9t   1/1     Terminating   0          60s
+rc-demo-g6dr8   1/1     Terminating   0          60s
+rc-demo-rzpm6   1/1     Terminating   0          60s
+rc-demo-xvncw   1/1     Terminating   0          60s
+rc-demo-4xr45   0/1     Terminating   0          60s
+```
+
+> Tóm lại: `ReplicationControllers` dùng để quản lý Pod lifecycle. Nó sẽ đảm bảo số lượng Pod trên cluster bằng với số Pod mong muốn. Khi Một Pod bị xóa thì  `ReplicationControllers` sẽ tạo một Pod mới dựa trên podTemplate, `ReplicationControllers` sẽ quản lý và select các Pod thông qua labels. Có thể  UPDATE podTemplate nhưng khi apply thì các Pod cũ sẽ không ăn podTemplate mới, để các Pod ăn podTemplate mới thì cần phải xóa hết các Pod cũ. `ReplicationControllers` cho phép có thể scale up hoặc down số lượng Pod.
+
+## **4.3 Using ReplicaSets instead of ReplicationControllers**
+
+### **4.3.1 Defining a ReplicaSet** 
+```yaml
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: demo-rs
+  labels:
+    app: label-pod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: label-pod
+  template:
+    metadata:
+      labels:
+        app: label-pod
+    spec:
+      containers:
+      - name: demo-liveness-probe
+        image: thanhnb1/demo:v2
+        ports:
+          - containerPort:  8080
+
+kubectl apply -f replicaset.yaml
+
+kubectl get po
+NAME            READY   STATUS    RESTARTS   AGE
+demo-rs-f2dmw   1/1     Running   0          88s
+demo-rs-xrwnl   1/1     Running   0          88s
+demo-rs-jgdq2   1/1     Running   0          88s
 ```
