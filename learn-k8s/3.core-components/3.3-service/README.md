@@ -145,3 +145,223 @@ spec:
     ![](./images/2.png)
 
 ## **4. Discovering services**
+Bằng việc tạo `service`, là cách mình tạo ra một IP và PORT stable, thông qua stable IP-PORT này thì có thể gửi được các request vào Pods. Cái địa chỉ IP-PORT này sẽ không bị thay đổi cho dù số lượng Pod có tăng hoặc giảm, IP Pods có bị thay đổi. Chúng ta chỉ cần quan tâm đến địa chỉ IP-PORT này mà không cần quan tâm đến số lượng hay IP của Pods có bị thay đổi.
+
+Có một vài vấn đề thế này:
+1. VD: mình có `serviceA` --call--> `serviceB`. Thì bằng cách nào để `serviceA` có thể biết được IP và Port của `serviceB`? 
+2. Mình có phải tạo `serviceB` trước và configs IP và Port của `serviceB` vào bên trong application của `serviceA` hay không?
+
+Nếu mà phải config `serviceB` vào `serviceA` thì tù quá. Kubernetes sẽ cũng cấp một số cách để thực giải quyết những vấn đề trên:
+
+```java
+/* file application.yaml
+
+# Dùng cho phần 4.1
+clients:
+    service-2:
+        uri: http://${SERVICE_2_SERVICE_HOST:service-2}:${SERVICE_2_SERVICE_PORT:80}
+
+
+# Dùng cho phần 4.2
+# Lấy thông tin IP và Port thông qua DNS.
+clients:
+    service-2:
+        uri: http://${SERVICE_2:service-2}
+*/
+
+@RestController
+@RequestMapping(value = "/healCheck")
+public class HealthCheckController {
+
+  @Value("${clients.service-2.uri}")
+  private String service2Uri;
+
+  private final static RestTemplate restTemplate = new RestTemplate();
+  private final static ObjectMapper objectMapper = new ObjectMapper();
+
+  @RequestMapping(value = "/doSomeThing", method = RequestMethod.GET)
+  public String doSomeThing() throws Exception {
+      String uri = service2Uri + "/healCheck/getStatus1";
+      ResponseEntity<String> response = restTemplate.getForEntity(uri, String.class);
+      System.out.println("API: " + uri);
+      System.out.println("Response: " + objectMapper.writeValueAsString(response));
+      return response.getBody();
+  }
+
+}
+```
+
+### **4.1 DISCOVERING SERVICES THROUGH ENVIRONMENT VARIABLES**
+> Templates Demo ở path: `learn-k8s/3.core-components/3.3-service/hands-on/2.discovery/discrovery-by-env`
+
+Khi Pod started thì Kubernetes sẽ thêm một vài các biến môi trường vào bên trong Pod, trong đó có các biến môi trường IP và Port của các services có trong cluster ở thời điểm mà Pod started.
+
+```kubernetes
+kubectl apply -f .
+
+kubectl get all 
+NAME                 READY   STATUS    RESTARTS   AGE
+pod/demo-service-2   1/1     Running   0          17s
+pod/demo-service-1   1/1     Running   0          17s
+pod/pod-for-test     1/1     Running   0          17s
+
+NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.152.183.1     <none>        443/TCP   15d
+service/service-1    ClusterIP   10.152.183.58    <none>        80/TCP    29h
+service/service-2    ClusterIP   10.152.183.234   <none>        80/TCP    28h
+
+# Xem các biến môi trường của Pod.
+
+kubectl exec -it po/demo-service-1 sh
+kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.
+/ # printenv
+KUBERNETES_SERVICE_PORT=443
+KUBERNETES_PORT=tcp://10.152.183.1:443
+LANGUAGE=en_US:en
+
+SERVICE_1_SERVICE_HOST=10.152.183.58
+SERVICE_2_SERVICE_HOST=10.152.183.234
+
+SERVICE_1_SERVICE_PORT=80
+SERVICE_2_SERVICE_PORT=80
+HOSTNAME=demo-service-1
+....
+/ #
+
+# Thực hiện gọi API: `/doSomeThing` của `service1` 
+# Có thể edit service1 thành kiểu NodePort để gọi từ ngoài cluster hoặc là attach vào pod/pod-for-test rồi thực hiện curl.
+kubectl edit service/service-1
+service/service-1 edited
+
+kubectl get svc
+...
+service/service-1    NodePort    10.152.183.234    <none>        80:32754/TCP   29h
+...
+
+# Call api thì nhận được logs bên dưới:
+http://localhost:32754/healCheck/doSomeThing
+
+2022-07-10 15:33:24.047  INFO 1 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint(s) beneath base path '/actuator'
+2022-07-10 15:33:24.245  INFO 1 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-07-10 15:33:24.431  INFO 1 --- [           main] com.thanhnb.study.demo.DemoApplication   : Started DemoApplication in 15.502 seconds (JVM running for 17.654)
+2022-07-10 15:33:27.036  INFO 1 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-07-10 15:33:27.037  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2022-07-10 15:33:27.039  INFO 1 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+/healCheck 1657467207148
+/healCheck 1657467216711
+/healCheck 1657467226717
+/healCheck 1657467236714
+/healCheck 1657467246715
+/healCheck 1657467256710
+/healCheck 1657467266713
+/healCheck 1657467276711
+/healCheck 1657467286716
+API: http://10.152.183.234:80/healCheck/getStatus1 # chỗ này đã lấy được IP và Port của service2.
+Response: {"headers":{"Content-Type":["text/plain;charset=UTF-8"],"Content-Length":["15"],"Date":["Sun, 10 Jul 2022 15:34:50 GMT"],"Keep-Alive":["timeout=60"],"Connection":["keep-alive"]},"body":"Service Running","statusCodeValue":200,"statusCode":"OK"}
+......
+
+# Nếu mà xóa `Service2`(IP sẽ thay đổi) đi thì biến môi trường trong các Pod của `service1` có được cập nhật không nhỉ?
+
+kubectl delete service/service-2
+
+kubectl get svc
+NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)        AGE
+service/kubernetes   ClusterIP   10.152.183.1     <none>        443/TCP        15d
+
+#IP của service2 đã thay đổi từ `10.152.183.234` thành `10.152.183.108`.
+service/service-2    ClusterIP   10.152.183.108   <none>        80/TCP         3m54s
+service/service-1    NodePort    10.152.183.58    <none>        80:32754/TCP   29h
+
+# Thực hiện call API: http://localhost:32754/healCheck/doSomeThing và thu được logs:
+
+/healCheck 1657468826712
+/healCheck 1657468836711
+/healCheck 1657468846710
+/healCheck 1657468856712
+2022-07-10 16:01:01.745 ERROR 1 --- [nio-8080-exec-7] o.a.c.c.C.[.[.[/].[dispatcherServlet]    : Servlet.service() for servlet [dispatcherServlet] in context with path [] threw exception [Request processing failed; nested exception is org.springframework.web.client.ResourceAccessException: I/O error on GET request for "http://10.152.183.234:80/healCheck/getStatus1": Connection timed out (Connection timed out); nested exception is java.net.ConnectException: Connection timed out (Connection timed out)] with root cause
+
+java.net.ConnectException: Connection timed out (Connection timed out)
+	at java.base/java.net.PlainSocketImpl.socketConnect(Native Method) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.doConnect(AbstractPlainSocketImpl.java:412) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connectToAddress(AbstractPlainSocketImpl.java:255) ~[na:na]
+	at java.base/java.net.AbstractPlainSocketImpl.connect(AbstractPlainSocketImpl.java:237) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:609) ~[na:na]
+	at java.base/java.net.Socket.connect(Socket.java:558) ~[na:na]
+
+# 10.152.183.234:80: IP này là IP cũ trước khi xóa `service2` => Khi xóa `service2` thì biến môi trường trong các Pods của `service1` không được cập nhật => gọi sẽ bị timeout như logs phía trên.
+
+# Cách này có vẻ vẫn hơi tù :>
+```
+
+### **4.2 DISCOVERING SERVICES THROUGH DNS**
+> Templates Demo ở path: `learn-k8s/3.core-components/3.3-service/hands-on/2.discovery/discrovery-by-dns`
+
+Ở namespace `kube-system` có một service `kube-dns` sẽ giúp các service có thể gọi nhau qua serviceName trong cùng namespace hoặc khác namespace. Cú pháp sẽ là: `<Tên service>.<tên namespace>.svc.cluster.local`, VD: service-1.default.svc.cluster.local
+
+```shell
+kubectl get all
+NAME                 READY   STATUS    RESTARTS      AGE
+pod/pod-for-test     1/1     Running   0             57s
+pod/demo-service-1   1/1     Running   0             57s
+pod/demo-service-2   1/1     Running   1 (26s ago)   57s
+
+NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.152.183.1     <none>        443/TCP   15d
+service/service-1    ClusterIP   10.152.183.162   <none>        80/TCP    57s
+service/service-2    ClusterIP   10.152.183.244   <none>        80/TCP    57s
+
+# Attach vào pod/pod-for-tests
+kubectl exec -it pod/pod-for-test sh
+/ # curl http://service-1/healCheck/doSomeThing
+Service Running/ # 
+/ # 
+
+# Xem logs của Pod service-1
+kubectl logs -f pod/demo-service-1
+...
+/healCheck 1657472402623
+/healCheck 1657472412624
+API: http://service-2/healCheck/getStatus1
+Response: {"headers":{"Content-Type":["text/plain;charset=UTF-8"],"Content-Length":["15"],"Date":["Sun, 10 Jul 2022 17:00:14 GMT"],"Keep-Alive":["timeout=60"],"Connection":["keep-alive"]},"body":"Service Running","statusCode":"OK","statusCodeValue":200}
+...
+
+# Thực hiện xóa Service-2 và tạo lại
+
+kubectl get all
+NAME                 READY   STATUS    RESTARTS       AGE
+pod/pod-for-test     1/1     Running   0              3m34s
+pod/demo-service-1   1/1     Running   0              3m34s
+pod/demo-service-2   1/1     Running   1 (3m3s ago)   3m34s
+
+NAME                 TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)   AGE
+service/kubernetes   ClusterIP   10.152.183.1     <none>        443/TCP   15d
+service/service-1    ClusterIP   10.152.183.162   <none>        80/TCP    3m34s
+# IP service-2 đã thay đổi từ `10.152.183.244` sang `10.152.183.144`
+service/service-2    ClusterIP   10.152.183.144   <none>        80/TCP    4s
+
+# Test lại xem có còn gọi được không.
+kubectl exec -it pod/pod-for-test sh
+kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.
+/ #  curl http://service-1/healCheck/doSomeThing
+Service Running/ # ^C
+/ # 
+
+# Logs Pod service-1:
+...
+/healCheck 1657472412624
+API: http://service-2/healCheck/getStatus1
+Response: {"headers":{"Content-Type":["text/plain;charset=UTF-8"],"Content-Length":["15"],"Date":["Sun, 10 Jul 2022 17:00:14 GMT"],"Keep-Alive":["timeout=60"],"Connection":["keep-alive"]},"body":"Service Running","statusCode":"OK","statusCodeValue":200}
+/healCheck 1657472422624
+/healCheck 1657472432674
+/healCheck 1657472442622
+/healCheck 1657472452625
+/healCheck 1657472462621
+/healCheck 1657472472624
+/healCheck 1657472482624
+API: http://service-2/healCheck/getStatus1
+Response: {"headers":{"Content-Type":["text/plain;charset=UTF-8"],"Content-Length":["15"],"Date":["Sun, 10 Jul 2022 17:01:32 GMT"],"Keep-Alive":["timeout=60"],"Connection":["keep-alive"]},"body":"Service Running","statusCode":"OK","statusCodeValue":200}
+/healCheck 1657472492622
+...
+
+# Như vậy thì dù `service2` có bị thay đổi IP thì khi gọi `service2` thông qua DNS thì vẫn gọi đươc.
+```

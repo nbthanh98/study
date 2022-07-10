@@ -1,0 +1,9 @@
+# Lấy thông tin IP và Port thông qua biến môi trường.
+# clients:
+#     service-2:
+#         uri: http://${SERVICE_2_SERVICE_HOST:service-2}:${SERVICE_2_SERVICE_PORT:80}
+
+# Lấy thông tin IP và Port thông qua DNS.
+clients:
+    service-2:
+        uri: http://${SERVICE_2:service-2}
