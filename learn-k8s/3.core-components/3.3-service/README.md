@@ -365,3 +365,71 @@ Response: {"headers":{"Content-Type":["text/plain;charset=UTF-8"],"Content-Lengt
 
 # Như vậy thì dù `service2` có bị thay đổi IP thì khi gọi `service2` thông qua DNS thì vẫn gọi đươc.
 ```
+
+## **5. Connecting to services living outside the cluster**
+Ở phần trước thì mình có tìm hiểu về Service, service thì có IP và Port không thay đổi cho dù số lượng, IP của Pod thay đổi. Cũng tìm hiểu cách để các service gọi nhau thông qua env, hoặc mà DNS cùng namespace hoặc khác namespace. Nhưng giờ có trường hợp application của mình cần phải kết nối đến một hệ thống khác ở bên ngoài cluster thì làm thế nào?. Clients Pods running trong cluster có thể connnect đến một `external service` giống như connect đến `internal service`.
+
+### **5.1 Introducing service endpoints**
+![](./images/3.png)
+
+Ở phần trước thì mình cũng có tìm hiểu về Service, các service select được các Pods thông qua `labelSelector` service cũng không link đến các Pods một các trực tiếp, sẽ có một Objects đứng giữa `Service` và `Pod` đó là `Endpoints`
+
+```shell
+kubectl describe svc/service-2
+Name:              service-2
+Namespace:         default
+Labels:            <none>
+Annotations:       <none>
+Selector:          app=demo-service-2
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.152.183.144
+IPs:               10.152.183.144
+Port:              <unset>  80/TCP
+TargetPort:        8080/TCP
+Endpoints:         10.1.28.94:8080 # IP và Port của Pod
+Session Affinity:  None
+Events:            <none>
+
+kubectl get ep
+NAME         ENDPOINTS             AGE
+kubernetes   192.168.1.123:16443   16d
+service-1    10.1.28.102:8080      22h
+service-2    10.1.28.94:8080       22h
+```
+Khi có request đến service thì service sẽ chọn một IP-Port trong danh sách `Endpoints` để redirects request đến với Pods.
+
+### **5.2 Manually configuring service endpoints**
+> Templates Demo ở path: `learn-k8s/3.core-components/3.3-service/hands-on/3.external-service/1.service-without-labels-selector.yaml` 
+```yaml
+
+# Service tên là: `external-service`, service này accept connections ở port 80. Service không có labels selector.
+
+apiVersion: v1
+kind: Service
+metadata:
+  #The name of the service must match the name of the Endpoints object.
+  name: external-service
+spec:
+  ports:
+  - port: 80
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  # The name of the Endpoints object must match the name of the service.
+  name: external-service
+subsets:
+# The IPs of the endpoints that the service will forward connections to.
+- addresses:
+  - ip: 11.11.11.11
+  - ip: 22.22.22.22
+  ports:
+  - port: 80 # The target port of the endpoints.
+```
+![](./images/4.png)
+
+Vì tạo service mà không có labels selector thì Endpoint object không được tự động tạo => phải tạo Endpoints objects bằng tay => phải update IP Endpoints bằng tay.
+
+### **5.3 Creating an alias for an external service**
