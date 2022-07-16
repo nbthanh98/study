@@ -432,4 +432,4 @@ subsets:
 
 Vì tạo service mà không có labels selector thì Endpoint object không được tự động tạo => phải tạo Endpoints objects bằng tay => phải update IP Endpoints bằng tay.
 
-### **5.3 Creating an alias for an external service**
+### **5.3 Exposing services externally through an Ingress resource**
