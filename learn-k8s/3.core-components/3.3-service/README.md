@@ -433,3 +433,120 @@ subsets:
 Vì tạo service mà không có labels selector thì Endpoint object không được tự động tạo => phải tạo Endpoints objects bằng tay => phải update IP Endpoints bằng tay.
 
 ### **5.3 Exposing services externally through an Ingress resource**
+Ở những phần trước thì đã tìm hiểu các để expose service để bên ngoài cluster có thể gọi được, NodePort, External-service. Kubernetes cũng có giới thiệu thêm một cách nữa để expose service đó là thông qua `Ingress`.
+
+#### **5.3.1 UNDERSTANDING WHY I NGRESSES ARE NEEDED**
+Ở các cách expose service khác như NodePort thì ta cần phải expose một Port ở trên Cluster, nếu mà nhiều service mà mỗi service đều expose 1 port thì điều này là không cần thiết. Có một cách khác là sử dụng `Ingress`, chỉ cần expose 1 Port và Client sẽ là người quyết định xem cliest muốn gọi vào service nào thông qua các host và path.
+![](./images/5.png)
+#### **5.3.2 Creating an Ingress resource**
+Cần cài một Ingress controller, ở đây mình sẽ cài `nginx-ingress-controller`. [Tham khảo helm chart](https://github.com/bitnami/charts/tree/master/bitnami/nginx-ingress-controller/)
+
+```bash
+# install helm on ubuntu:
+curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+# installing-the-chart
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install my-release bitnami/nginx-ingress-controller
+
+nbt@nbt:~$ kubectl get po
+NAME                                                              READY   STATUS    RESTARTS       AGE
+nginx-ingress-nginx-ingress-controller-default-backend-7b972m5k   1/1     Running   0              117s
+nginx-ingress-nginx-ingress-controller-7464844899-x9cj7           1/1     Running   0              117s
+
+```
+```yml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nginx-ingress
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/add-base-url: "true"	
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, PUT, POST, DELETE, PATCH, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "x-requested-with,authorization,Content-Type,Content-Length,Authorization,credential,X-XSRF-TOKEN" 
+    nginx.ingress.kubernetes.io/cors-expose-headers: "*"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-credentials: "true"
+    nginx.ingress.kubernetes.io/cors-max-age: "1728000"
+    nginx.ingress.kubernetes.io/proxy-body-size: 50m
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+spec:
+  rules:
+  - host:
+    http:
+      paths:
+      - path: /service-1(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: service-1
+            port:
+              number: 80
+      - path: /service-2(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: service-2
+            port:
+              number: 80
+```
+```powershell
+kubectl apply -f learn-k8s/3.core-components/3.3-service/hands-on/3.external-service/nginx-ingress-1.yaml
+
+kubectl get ing
+NAME            CLASS    HOSTS   ADDRESS         PORTS   AGE
+nginx-ingress   <none>   *       192.168.1.123   80      27m
+
+kubectl describe ing/nginx-ingress
+Name:             nginx-ingress
+Labels:           <none>
+Namespace:        default
+Address:          192.168.1.123
+Ingress Class:    <none>
+Default backend:  <default>
+Rules:
+  Host        Path  Backends
+  ----        ----  --------
+  *           
+              /service-1(/|$)(.*)   service-1:80 (10.1.28.77:8080)
+              /service-2(/|$)(.*)   service-2:80 (10.1.28.86:8080)
+...
+...
+# Get Service
+kubectl get svc
+NAME                                                     TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)                      AGE
+kubernetes                                               ClusterIP      10.152.183.1     <none>        443/TCP                      22d
+service-1                                                ClusterIP      10.152.183.162   <none>        80/TCP                       6d23h
+service-2                                                ClusterIP      10.152.183.144   <none>        80/TCP                       6d23h
+nginx-ingress-nginx-ingress-controller-default-backend   ClusterIP      10.152.183.178   <none>        80/TCP                       48m
+nginx-ingress-nginx-ingress-controller                   LoadBalancer   10.152.183.242   <pending>     80:32542/TCP,443:30334/TCP   48m
+
+# Test
+curl http://localhost:32542/service-1/healCheck/getStatus1
+Service Running
+
+curl http://localhost:32542/service-2/healCheck/getStatus1
+Service Running
+```
+Ở trên đã route được đến 2 service là: `service-1` và `service-2` mà chỉ cần expose 1 IP và Port của nginx-ingress-controller, sẽ truy cập các service thông qua host và path.
+
+![](./images/6.png)
+
+### **5.4 Troubleshooting services**
+When you’re unable to access your pods through the service, you should start by going through the following list:
+- First, make sure you’re connecting to the service’s cluster IP from within the cluster, not from the outside.
+- Don’t bother pinging the service IP to figure out if the service is accessible (remember, the service’s cluster IP is a virtual IP and pinging it will never work).
+- If you’ve defined a readiness probe, make sure it’s succeeding; otherwise the pod won’t be part of the service.
+- To confirm that a pod is part of the service, examine the corresponding Endpoints object with kubectl get endpoints .
+- If you’re trying to access the service through its FQDN or a part of it (for example, myservice.mynamespace.svc.cluster.local or myservice.mynamespace) and it doesn’t work, see if you can access it using its cluster IP instead of the FQDN.
+- Check whether you’re connecting to the port exposed by the service and not the target port.
+- Try connecting to the pod IP directly to confirm your pod is accepting connections on the correct port.
+- If you can’t even access your app through the pod’s IP, make sure your app isn’t only binding to localhost.
