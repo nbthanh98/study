@@ -7,4 +7,4 @@
 
 [2: Kubernetes Architecture](https://github.com/nbthanh98/study/blob/master/learn-k8s/2.kubernetes-architecture/kubernetes_architecture.md).
 
-[3: Core components](https://github.com/nbthanh98/study/blob/master/learn-k8s/3.core-components/core-components.md).
+[3: Core components](https://github.com/nbthanh98/study/blob/master/learn-k8s/3.core-components/README.md).

@@ -6,6 +6,8 @@
 
 **[3. Service.](https://github.com/nbthanh98/study/blob/master/learn-k8s/3.core-components/3.3-service/README.md)**
 
+**[4. Volume.](https://github.com/nbthanh98/study/blob/master/learn-k8s/3.core-components/3.3-volume/README.md)**
+
 
 
 https://sxia.medium.com/why-kubernetes-needs-pod-service-and-deployment-f6c96c7d379b
