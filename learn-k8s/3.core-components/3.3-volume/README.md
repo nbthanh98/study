@@ -273,3 +273,291 @@ nbt@nbt:~/thanhnb/study/data-volumes/mysql-pv$
 
 # Như trên thì là Pod đã được mount thành công.
 ```
+### **3.3 Understanding the benefits of using PersistentVolumes and claims**
+
+![](./images/6.png)
+
+Bằng việc sử dụng `PersistentVolumes` và `PersistentVolumeClaim` thì sẽ dễ dàng sử dụng hơn cho các Developer, các Developer sẽ chỉ cần đưa ra các yêu cầu về volume cho các application.
+
+```yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+```
+Như file trên thì các Developer sẽ cần đưa ra các yêu cầu đối với Volume như: `storage: 5Gi`, `accessModes: ReadWriteOnce`. Việc của Kubernetes sẽ phải tìm các `PersistentVolume` phù hợp với `PersistentVolumeClaim` đã yêu cầu. Bằng việc sử dụng `PersistentVolumes` và `PersistentVolumeClaim` thì các Developer cũng sẽ không cần quan tâm kiểu Volume của `PersistentVolume` ở phía sau, nhưng việc sử dụng `PersistentVolumes` và `PersistentVolumeClaim` thì Developer cũng sẽ phải thêm mấy bước để define `PersistentVolumes` và `PersistentVolumeClaim`.
+
+### **3.4 Recycling PersistentVolumes**
+> filePath: learn-k8s/3.core-components/3.3-volume/hands-on/pv-and-pvc/pod-pv-pvc.yaml
+
+```yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-pv
+  labels:
+    type: local
+spec:
+  storageClassName: manual
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /home/nbt/thanhnb/study/data-volumes/mysql-pv
+    
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-pv-claim
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mysql-57
+spec:
+  containers:
+  - name: mysq-57
+    image: mysql:5.7
+    resources:
+      limits:
+        cpu: 200m
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+    env:
+      - name: MYSQL_ROOT_PASSWORD
+        value: password
+    ports:
+      - containerPort: 3306
+        name: mysql
+    volumeMounts:
+    - name: mysql-persistent-storage
+      mountPath: /var/lib/mysql
+  volumes:
+    - name: mysql-persistent-storage
+      persistentVolumeClaim:
+        claimName: mysql-pv-claim
+  restartPolicy: Always
+```
+Apply cái file trên:
+```powershell
+kubectl apply -f pod-pv-pvc.yaml -n test
+persistentvolume/mysql-pv created
+persistentvolumeclaim/mysql-pv-claim created
+pod/mysql-57 created
+
+kubectl get all -n test
+NAME           READY   STATUS    RESTARTS   AGE
+pod/mysql-57   1/1     Running   0          10s
+
+kubectl get pv
+NAME       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   REASON   AGE
+mysql-pv   5Gi        RWO            Retain           Bound    test/mysql-pv-claim   manual                  23s
+
+kubectl get pvc -n test
+NAME             STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+mysql-pv-claim   Bound    mysql-pv   5Gi        RWO            manual         27s
+
+# Như trên thấy thì `PersistentVolume: mysql-pv` đã ràng buộc với `PersistentVolumeClaim: mysql-pv-claim` và Pod đang ở trạng thái running.
+
+# Giờ thử thực hiện xóa Pod: mysql-57 và PersistentVolumeClaim: mysql-pv-claim:
+kubectl delete po/mysql-57 -n test
+pod "mysql-57" deleted
+
+kubectl delete pvc/mysql-pv-claim -n test
+persistentvolumeclaim "mysql-pv-claim" deleted
+
+# Thực hiện taọ lại `PersistentVolumeClaim: mysql-pv-claim` để xem nó có thể ràng buộc lại với `PersistentVolume: mysql-pv` như cũ hay không:
+kubectl apply -f pod-pv-pvc.yaml -n test
+persistentvolumeclaim/mysql-pv-claim created
+
+kubectl get pvc -n test
+NAME             STATUS    VOLUME   CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+mysql-pv-claim   Pending                                      manual         8s
+
+kubectl get pv
+NAME       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                 STORAGECLASS   REASON   AGE
+mysql-pv   5Gi        RWO            Retain           Released   test/mysql-pv-claim   manual                  2m8s
+
+# Trạng thái của PVC đang là peding, trạng thái của PV đang là: `Released` chứ không phải là `Bound` như trước.
+# Một vài trạng thái của PV:
+# 1. Available : Ở trạng thái này là PV đã sẵn sàng để được sử dụng bởi PVC.
+# 2. Bound     : Ở trạng thái này là PV đã được assigned cho PVC.
+# 3. Released  : Ở trạng thái này là PVC mà assigned cho PV đã bị xóa, nhưng Cluster chưa reclaimed resource.
+# 4. Failed    : Ở trạng thái này là PV đang bị tạo lỗi, thực hiện describe PV để xem lỗi là gì.
+
+# Khi mà tạo lại Pod thì có thể gặp lỗi này:
+Conditions:
+  Type           Status
+  PodScheduled   False 
+Volumes:
+  mysql-persistent-storage:
+    Type:       PersistentVolumeClaim (a reference to a PersistentVolumeClaim in the same namespace)
+    ClaimName:  mysql-pv-claim
+    ReadOnly:   false
+  kube-api-access-6g5jm:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   Burstable
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type     Reason            Age   From               Message
+  ----     ------            ----  ----               -------
+  Warning  FailedScheduling  30s   default-scheduler  0/1 nodes are available: 1 pod has unbound immediate PersistentVolumeClaims. preemption: 0/1 nodes are available: 1 Preemption is not helpful for scheduling.
+```
+> *When a user is done with their volume, they can delete the PVC objects from the API that allows reclamation of the resource. The reclaim policy for a PersistentVolume tells the cluster what to do with the volume after it has been released of its claim. Currently, volumes can either be Retained, Recycled, or Deleted.*
+
+**1. RECLAIMING PERSISTENT VOLUMES MANUALLY**
+
+Bạn sẽ setting cho `persistentVolumeReclaimPolicy: Retain`. `Retain` có nghĩa là mặc dù xóa PVC, data vẫn sẽ được giữ lại và sẽ không có PVC nào khác có thể claim cái data này (Giống như trường hợp trên sẽ không có PVC nào Claim lại được). Mình cần phải làm có PV STATUS từ `Released` sang `Available` để có thể ràng buộc lại với PVC: có thể xóa PV đi tạo lại.
+
+// TODO: Làm Demo phần này: If you want to reuse the same storage asset, create a new PersistentVolume with the same storage asset definition.
+
+```powershell
+kubectl delete pv/mysql-pv -n test
+warning: deleting cluster-scoped resources, not scoped to the provided namespace
+persistentvolume "mysql-pv" deleted
+
+# tạo lại PVC 
+kubectl get pvc -n test
+NAME             STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+mysql-pv-claim   Bound    mysql-pv   5Gi        RWO            manual         4s
+
+# Tạo lại PV
+kubectl get pv -n test
+NAME       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   REASON   AGE
+mysql-pv   5Gi        RWO            Retain           Bound    test/mysql-pv-claim   manual
+
+# Sau khi tạo lại thì đã thấy PV và PVC đã ràng buộc lại được với nhau.
+```
+**2. RECLAIMING PERSISTENT VOLUMES AUTOMATICALLY**
+
+- **Setting PerrsistentVolume persistentVolumeReclaimPolicy: Recycle**
+    
+    ```yml
+    apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: mysql-pv
+      labels:
+        type: local
+    spec:
+      storageClassName: manual
+      persistentVolumeReclaimPolicy: Recycle
+      capacity:
+        storage: 5Gi
+      accessModes:
+        - ReadWriteOnce
+      hostPath:
+        path: /tmp/data-volumes/mysql-pv
+    ```
+    Demo:
+    ```powershell
+    kubectl get po -n test
+    NAME         READY   STATUS    RESTARTS   AGE
+    mysql-57-2   1/1     Running   0          3s
+    mysql-57-1   1/1     Running   0          3s
+
+
+    kubectl get pv,pvc -n test
+    NAME                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   REASON   AGE
+    persistentvolume/mysql-pv   5Gi        RWO            Recycle          Bound    test/mysql-pv-claim   manual                  9s
+
+    NAME                                   STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+    persistentvolumeclaim/mysql-pv-claim   Bound    mysql-pv   5Gi        RWO            manual         9s
+    
+    # Thực hiện delete Pod và persistentvolumeclaim/mysql-pv-claim
+    kubectl delete po/mysql-57-2 -n test
+    pod "mysql-57-2" deleted
+    
+    kubectl delete po/mysql-57-1 -n test
+    pod "mysql-57-1" deleted
+    
+    kubectl delete persistentvolumeclaim/mysql-pv-claim -n test
+    persistentvolumeclaim "mysql-pv-claim" deleted
+
+    # Get lại PV và PVC thì thấy PVC đã bị xóa và PV STATUS đang là Released
+    kubectl get pv,pvc -n test
+    NAME                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS     CLAIM                 STORAGECLASS   REASON   AGE
+    persistentvolume/mysql-pv   5Gi        RWO            Recycle          Released   test/mysql-pv-claim   manual                  62s
+
+    # Thực hiện tạo lại PVC
+     kubectl apply -f pod-pv-pvc-recycle.yaml -n test
+    persistentvolumeclaim/mysql-pv-claim created
+    
+    # Get lại PV, PVC, lúc này thì thấy PVC đã ràng buộc được với PV, và PV đã đổi trạng thái từ Released -> Bound
+    kubectl get pv,pvc -n test
+    NAME                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   REASON   AGE
+    persistentvolume/mysql-pv   5Gi        RWO            Recycle          Bound    test/mysql-pv-claim   manual                  101s
+
+    NAME                                   STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+    persistentvolumeclaim/mysql-pv-claim   Bound    mysql-pv   5Gi        RWO            manual         3s
+
+    # Tạo lại Pod
+    kubectl get po -n test
+    NAME         READY   STATUS    RESTARTS      AGE
+    mysql-57-2   1/1     Running   0             18s
+    mysql-57-1   1/1     Running   2 (15s ago)   18s
+    ```
+    
+- **Setting PerrsistentVolume persistentVolumeReclaimPolicy: Delete**
+
+    ```yml
+    apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: mysql-pv
+      labels:
+        type: local
+    spec:
+      storageClassName: manual
+      persistentVolumeReclaimPolicy: Delete
+      capacity:
+        storage: 5Gi
+      accessModes:
+        - ReadWriteOnce
+      hostPath:
+        path: /tmp/data-volumes/mysql-pv
+    ```
+    Demo:
+
+    ```powershell
+    # Lấy PV, PVC. Thấy PV và PVC đang ràng buộc nhau, và PV RECLAIM POLICY đang là Delete.
+    kubectl get pv,pvc -n test
+    NAME                        CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                 STORAGECLASS   REASON   AGE
+    persistentvolume/mysql-pv   5Gi        RWO            Delete           Bound    test/mysql-pv-claim   manual                  3m32s
+
+    NAME                                   STATUS   VOLUME     CAPACITY   ACCESS MODES   STORAGECLASS   AGE
+    persistentvolumeclaim/mysql-pv-claim   Bound    mysql-pv   5Gi        RWO            manual         3m5s
+
+    # Thực hiện xóa PVC
+    kubectl delete persistentvolumeclaim/mysql-pv-claim -n test
+    persistentvolumeclaim "mysql-pv-claim" deleted
+    
+    # Mình thấy sau khi xóa PVC thì PV cũng tự động xóa luôn
+    kubectl get pv,pvc -n test
+    No resources found
+    ```

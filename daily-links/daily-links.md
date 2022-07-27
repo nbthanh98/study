@@ -9,3 +9,5 @@ https://askubuntu.com/questions/1030360/how-to-make-ubuntu-18-04-dock-look-like-
 https://www.youtube.com/c/HoussemDellai/videos
 
 https://www.manning.com/books/pipeline-as-code
+
+https://www.freecodecamp.org/news/the-kubernetes-handbook/
