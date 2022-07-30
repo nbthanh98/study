@@ -1,0 +1,7 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: demo-config-map
+  namespace: config-map
+data:
+  MESSAGE: Hello nha :D

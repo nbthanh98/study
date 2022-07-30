@@ -1,0 +1,8 @@
+version: "3.2"
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - 8080:80
+    volumes:
+      - ./target:/usr/share/nginx/html

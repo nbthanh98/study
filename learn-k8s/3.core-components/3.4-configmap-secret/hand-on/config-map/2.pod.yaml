@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-config-map
+  namespace: config-map
+  labels:
+    app: demo-config-map
+spec:
+  containers:
+  - name: demo-config-map
+    image: "thanhnb1/demo:config-map"
+    resources:
+      limits:
+        cpu: 200m
+        memory: 500Mi
+      requests:
+        cpu: 100m
+        memory: 200Mi
+    env:
+    - name: MESSAGE
+      valueFrom:
+        configMapKeyRef:
+          name: demo-config-map
+          key: MESSAGE
+    ports:
+    - containerPort: 8080
+      name: http

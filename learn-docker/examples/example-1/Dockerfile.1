@@ -1,0 +1,11 @@
+FROM openjdk:11.0-slim AS build
+WORKDIR /workspace/app
+COPY . /workspace/app
+RUN chmod +x ./gradlew
+RUN --mount=type=cache,target=/root/.gradle ./gradlew clean build -x test -i --stacktrace
+
+FROM openjdk:11.0-slim
+COPY --from=build /workspace/app/build/libs/myapp.jar app.jar
+RUN /bin/sh -c 'touch /app.jar'
+ENTRYPOINT ["java","-jar","/app.jar"]
+ENV TZ="Asia/Ho_Chi_Minh"

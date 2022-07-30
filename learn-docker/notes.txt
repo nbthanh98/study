@@ -1,0 +1,3 @@
+https://medium.com/bb-tutorials-and-thoughts/250-practice-questions-for-the-dca-exam-84f3b9e8f5ce
+https://medium.com/@Opportunity-of-Learning/5-best-books-for-prepare-cka-and-ckad-exam-533bf0936c41
+https://www.gresearch.co.uk/article/securing-kubernetes-services-with-oauth2-oidc/

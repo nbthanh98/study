@@ -1,0 +1,31 @@
+# Ref: https://viblo.asia/p/kubernetes-series-bai-6-volume-gan-disk-storage-vao-container-OeVKB6rrKkW
+#emptyDir là loại volume đơn giản nhất, nó sẽ tạo ra một empty directory bên trong Pod, các container trong một Pod có thể ghi dữ liệu vào bên trong nó.
+#Volume chỉ tồn tại trong một lifecycle của Pod, dữ liệu trong loại volume này chỉ được lưu trữ tạm thời và sẽ mất đi khi Pod bị xóa.
+#Ta dùng loại volume này khi ta chỉ muốn các container có thể chia sẻ dữ liệu lẫn nhau và không cần lưu trữ dữ liệu lại.
+#Ví dụ là dữ liệu log từ một thằng container chạy web API, và ta có một thằng container khác sẽ truy cập vào log đó để xử lý log.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pod-empty-dir-volume
+spec:
+  containers:
+    # container 1
+    - name: html-generator
+      image: luksa/fortune
+      volumeMounts:
+        - name: html # The volume called html is mounted at /var/htdocs in the container
+          mountPath: /var/htdocs
+    # container 2
+    - name: web-server
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+          protocol: TCP
+      volumeMounts:
+        - name: html
+          # The volume called html is mounted at /usr/share/nginx/html in the container
+          mountPath: /usr/share/nginx/html
+          readOnly: true
+  volumes:
+    - name: html
+      emptyDir: {}

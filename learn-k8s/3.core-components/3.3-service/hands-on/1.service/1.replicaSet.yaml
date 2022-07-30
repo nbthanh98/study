@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: demo-rs
+  labels:
+    app: label-pod
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: label-pod
+  template:
+    metadata:
+      labels:
+        app: label-pod
+    spec:
+      containers:
+      - name: demo-liveness-probe
+        image: thanhnb1/demo:v2
+        ports:
+          - containerPort: 8080

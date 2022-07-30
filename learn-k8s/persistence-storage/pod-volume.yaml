@@ -1,0 +1,24 @@
+# hostPath là loại volume sẽ tạo một mount point từ Pod ra ngoài filesystem của node. Đây là loại volume đầu tiên ta nói mà có thể dùng để lưu trữ persistent data.
+# Dữ liệu lưu trong volume này chỉ tồn tại trên một worker node và sẽ không bị xóa đi khi Pod bị xóa. Đối với loại volume này thì Pod của ta cần phải được tạo đúng
+# worker node thì ta mới có được dữ liệu trước đó, nếu Pod của ta được tạo ở một worker node khác thì khi đó Pod sẽ không có dữ liệu cũ, do dữ liệu vẫn nằm ở worker
+# node cũ. Loại volume này ta không sử dụng nó cho việc lưu trữ persistent data hoàn toàn được. Cái ta muốn là dù Pod được tạo ở worker node nào thì dữ liệu của ta vẫn có,
+# để mount được vào trong container.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath-volume
+spec:
+  containers:
+    - image: nginx:alpinep
+      name: web-server
+      volumeMounts:
+        - name: log # log volume
+          mountPath: /var/log/nginx # mounted at /var/log/nginx in the container
+      ports:
+        - containerPort: 80
+          protocol: TCP
+  volumes:
+    - name: log
+      hostPath: # hostPath volume
+        path: /var/log/nginx # folder of woker node

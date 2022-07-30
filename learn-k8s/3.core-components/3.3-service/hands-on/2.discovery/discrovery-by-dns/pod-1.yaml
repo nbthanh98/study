@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: demo-service-1
+  labels:
+    app: demo-service-1
+spec:
+  containers:
+  - name: demo-service-1
+    image: thanhnb1/demo:v4
+    resources:
+      requests:
+        memory: "64Mi"
+        cpu: "250m"
+      limits:
+        memory: "128Mi"
+        cpu: "500m"
+    ports:
+    - containerPort: 8080
+    livenessProbe:
+      httpGet:
+        path: /healCheck/getStatus1
+        port: 8080

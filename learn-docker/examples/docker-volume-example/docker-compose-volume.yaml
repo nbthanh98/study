@@ -1,0 +1,18 @@
+version: "3.2"
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - 8080:80
+    volumes:
+      - html_files:/usr/share/nginx/html
+  
+  web1:
+    image: nginx:latest
+    ports:
+      - 8081:80
+    volumes:
+      - html_files:/usr/share/nginx/html
+
+volumes:
+  html_files:

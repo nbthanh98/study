@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: PersistenceVolume
+metadata:
+  name: pv01
+spec:
+  #Capacity: Khi tạo PersistenceVolume(PV) thì cần khai báo kích thước volume, trong VD ở đây thì là 5Gi.
+  capacity:
+    storage: 5Gi
+
+  #Access Modes:
+  # - ReadWriteOnce: This allows only a single node to access the volume in read-write mode. 
+  #                  Furthermore, all pods in that single node can read and write to such volumes.
+  # - ReadWriteMany: Multiple nodes can read and write to the volume.
+  # - ReadOnlyMany: This means that the volume will be in a read-only mode and accessible by multiple nodes.
+  # - ReadWriteOncePod: Only a single pod can gain access to the volume.
+  accessModes:
+    - ReadWriteOnce
+
+  # specify the PV type you want to use. The YAML file above uses the hostPath with a path of where it should read and write data.
+  hostPath:
+    path: "/mnt/data"
+  storageClassName: slow
+---
