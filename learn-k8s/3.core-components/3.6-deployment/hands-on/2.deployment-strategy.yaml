@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  deployment-strategy
+  labels:
+    app:  deployment-strategy
+spec:
+  selector:
+    matchLabels:
+      app: deployment-strategy
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app:  deployment-strategy
+    spec:
+      containers:
+      - name:  deployment-strategy
+        image:  thanhnb1/demo:v4
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+      restartPolicy: Always

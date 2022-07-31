@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  deployment-demo
+  labels:
+    app:  deployment-demo
+spec:
+  selector:
+    matchLabels:
+      app: deployment-demo
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app:  deployment-demo
+    spec:
+      containers:
+      - name:  deployment-demo
+        image:  thanhnb1/demo:v4
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+      restartPolicy: Always
