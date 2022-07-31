@@ -8,6 +8,9 @@
 
 **[4. Volume.](https://github.com/nbthanh98/study/blob/master/learn-k8s/3.core-components/3.3-volume/README.md)**
 
+**[5. Secret.](https://github.com/nbthanh98/study/tree/master/learn-k8s/3.core-components/3.5-configmap-secret)**
+
+**[6. Deployment.](https://github.com/nbthanh98/study/tree/master/learn-k8s/3.core-components/3.6-deployment)**
 
 
 https://sxia.medium.com/why-kubernetes-needs-pod-service-and-deployment-f6c96c7d379b
