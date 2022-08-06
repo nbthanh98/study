@@ -190,61 +190,178 @@ NAME                                         DESIRED   CURRENT   READY   AGE
 replicaset.apps/deployment-demo-5f589cb6c4   2         2         2       6s
 ```
 ## **2.2 Updating a Deployment**
-Thực hiện update image tag từ v2 -> v4 trong file deployment.
-```bash
-kubectl apply -f 1.deployment.yaml -n deployment
-deployment.apps/deployment-demo configured
+Trong Kubernetes Deployment có thể thay đổi một vài resource như:
+1. Thay đổi Pod template.
+2. Thay đổi về số lượng Pod (scale up or down).
+3. Thực hiện rollback về version trước đó của Deployment.
 
-# Thấy những pod cũ đang bị xóa đi, để tạo lại các Pod mới (update image tag mới).
-kubectl get all -n deployment
-NAME                                   READY   STATUS        RESTARTS   AGE
-pod/deployment-demo-84b7f6b884-766lb   1/1     Running       0          2s
-pod/deployment-demo-5f589cb6c4-gbhmt   1/1     Terminating   0          8m3s
-pod/deployment-demo-84b7f6b884-dr2kx   1/1     Running       0          1s
-pod/deployment-demo-5f589cb6c4-c6zvq   1/1     Terminating   0          8m3s
+**DEMO**
 
-NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/deployment-demo   2/2     2            2           8m3s
+1. Thực hiện update image tag từ v2 -> v4 trong file deployment.
 
-# Mỗi lần update sẽ đều tạo ra các replicaSet, replicaset cũ thì scale về 0 Pod, còn replicaset mới thì là 2 Pod như trong file deployment.
-# Replicaset này sẽ phục vụ cho việc mình rollback lại về các version cũ.
-NAME                                         DESIRED   CURRENT   READY   AGE
-replicaset.apps/deployment-demo-84b7f6b884   2         2         2       2s   
-replicaset.apps/deployment-demo-5f589cb6c4   0         0         0       8m3s
+    ```bash
+    kubectl apply -f 1.deployment.yaml -n deployment
+    deployment.apps/deployment-demo configured
 
-# Xem lịch sử Update của Deployment
-kubectl rollout history deployment deployment-demo -n deployment
-deployment.apps/deployment-demo 
-REVISION  CHANGE-CAUSE
-1         <none>
-2         <none>
+    # Thấy những pod cũ đang bị xóa đi, để tạo lại các Pod mới (update image tag mới).
+    kubectl get all -n deployment
+    NAME                                   READY   STATUS        RESTARTS   AGE
+    pod/deployment-demo-84b7f6b884-766lb   1/1     Running       0          2s
+    pod/deployment-demo-5f589cb6c4-gbhmt   1/1     Terminating   0          8m3s
+    pod/deployment-demo-84b7f6b884-dr2kx   1/1     Running       0          1s
+    pod/deployment-demo-5f589cb6c4-c6zvq   1/1     Terminating   0          8m3s
 
-# Vì mỗi lần Update thì ReplicaSet không bị xóa đi, nên là Kubernetes có thể rollback về bất cứ version nào mà không chỉ là version trước đó.
-kubectl rollout undo deployment/deployment-demo -n deployment --to-revision=1
-deployment.apps/deployment-demo rolled back
+    NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/deployment-demo   2/2     2            2           8m3s
 
-# POd được tạo lại và ăn theo image tag trước đó.
- kubectl get all -n deployment
-NAME                                   READY   STATUS        RESTARTS   AGE
-pod/deployment-demo-5f589cb6c4-ztqrn   1/1     Running       0          5s
-pod/deployment-demo-5f589cb6c4-pdz6q   1/1     Running       0          3s
-pod/deployment-demo-84b7f6b884-766lb   1/1     Terminating   0          7m25s
+    # Mỗi lần update sẽ đều tạo ra các replicaSet, replicaset cũ thì scale về 0 Pod, còn replicaset mới thì là 2 Pod như trong file deployment.
+    # Replicaset này sẽ phục vụ cho việc mình rollback lại về các version cũ.
+    NAME                                         DESIRED   CURRENT   READY   AGE
+    replicaset.apps/deployment-demo-84b7f6b884   2         2         2       2s   
+    replicaset.apps/deployment-demo-5f589cb6c4   0         0         0       8m3s
+    ```
+2. Thực hiện thay đổi số lượng Pod (scale up and down)
+    
+    ```bash
+    kubectl scale --replicas=<expected_replica_num> deployment <deployment_name>
+    
+    # Hiện đang có 2 ReplicaSet cho của Deploument/deployment-demo
+    kubectl get all -n deployment
+    NAME                                   READY   STATUS    RESTARTS        AGE
+    pod/deployment-demo-5f589cb6c4-pdz6q   1/1     Running   11 (5h4m ago)   5d22h
+    pod/deployment-demo-5f589cb6c4-ztqrn   1/1     Running   11 (5h4m ago)   5d22h
+    
+    NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/   2/2     2            2           5d23h
+    
+    NAME                                         DESIRED   CURRENT   READY   AGE
+    replicaset.apps/deployment-demo-5f589cb6c4   2         2         2       5d23h
+    replicaset.apps/deployment-demo-84b7f6b884   0         0         0       5d22h  
 
-NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
-deployment.apps/deployment-demo   2/2     2            2           15m
+    # Thực hiện tăng số lượng ReplicaSet lên = 4
+    kubectl scale --replicas=4 deployment/deployment-demo -n deployment
+    deployment.apps/deployment-demo scaled
+    
+    # Số lượng Pod lúc này đã tăng từ 2 => 4
+    kubectl get all -n deployment
+    NAME                                   READY   STATUS    RESTARTS        AGE
+    pod/deployment-demo-5f589cb6c4-pdz6q   1/1     Running   11 (5h6m ago)   5d22h
+    pod/deployment-demo-5f589cb6c4-ztqrn   1/1     Running   11 (5h6m ago)   5d22h
+    pod/deployment-demo-5f589cb6c4-nskt6   1/1     Running   0               3s
+    pod/deployment-demo-5f589cb6c4-p6h5t   1/1     Running   0               3s
 
-NAME                                         DESIRED   CURRENT   READY   AGE
-replicaset.apps/deployment-demo-5f589cb6c4   2         2         2       15m
-replicaset.apps/deployment-demo-84b7f6b884   0         0         0       7m25s
-```
-![](./images/2.png)
+    NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/deployment-demo   4/4     4            4           5d23h
 
-#### **=> NOTE:** Deployment có thể update resource, mỗi lần update thì sẽ sinh ra một replicaset phục vụ cho việc rollback, mình có thể rollback về bất cứ phiên bản nào. Số lượng phiên bản default sẽ là 10.
+    NAME                                         DESIRED   CURRENT   READY   AGE
+    replicaset.apps/deployment-demo-84b7f6b884   0         0         0       5d22h
+    replicaset.apps/deployment-demo-5f589cb6c4   4         4         4       5d23h
+    ```
+3. Thực hiện rollback về version trước đó của Deployment.
+    ```bash
+    # Xem lịch sử Update của Deployment
+    kubectl rollout history deployment deployment-demo -n deployment
+    deployment.apps/deployment-demo 
+    REVISION  CHANGE-CAUSE
+    1         <none>
+    2         <none>
 
-## **2.3 Controlling the rate of the rollout**
-Khi mà update Deployment resource thì các Pod mới sẽ được tạo ra, các Pod cũ sẽ bị xóa (xóa đến lúc nào hết Pod cũ thì thôi). Kubernets cũng cung cấp cho mình cách để config cách Pod mới được tạo ra và Pod cũ bị xóa đi như thế nào thông qua việc thêm các thuộc tính của rolling update strategy.
+    # Vì mỗi lần Update thì ReplicaSet không bị xóa đi, nên là Kubernetes có thể rollback về bất cứ version nào mà không chỉ là version trước đó.
+    kubectl rollout undo deployment/deployment-demo -n deployment --to-revision=1
+    deployment.apps/deployment-demo rolled back
 
-**INTRODUCING THE MAXS URGE AND MAX UNAVAILABLE PROPERTIES OF THE ROLLING UPDATE STRATEGY**
-Có 2 thuộc tính mà mình có thể thêm vào file Deployment là `maxSurge` và `maxUnavailable` được setting như là một phần của `rollingUpdate`
+    # POd được tạo lại và ăn theo image tag trước đó.
+    kubectl get all -n deployment
+    NAME                                   READY   STATUS        RESTARTS   AGE
+    pod/deployment-demo-5f589cb6c4-ztqrn   1/1     Running       0          5s
+    pod/deployment-demo-5f589cb6c4-pdz6q   1/1     Running       0          3s
+    pod/deployment-demo-84b7f6b884-766lb   1/1     Terminating   0          7m25s
+    
+    NAME                              READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/deployment-demo   2/2     2            2           15m
+    
+    NAME                                         DESIRED   CURRENT   READY   AGE
+    replicaset.apps/deployment-demo-5f589cb6c4   2         2         2       15m
+    replicaset.apps/deployment-demo-84b7f6b884   0         0         0       7m25s
+    ```
+    ![](./images/2.png)
 
-https://medium.com/kokster/updating-kubernetes-deployments-867421d4e337
+#### **=> NOTE: Deployment có thể update resource, mỗi lần update thì sẽ sinh ra một replicaset phục vụ cho việc rollback, mình có thể rollback về bất cứ phiên bản nào. Số lượng phiên bản default sẽ là 10.**
+
+## **2.3 Kubernetes support 2 different update strategies**
+Kubernetes thì hỗ trợ 2 kiểu `update strategies` (chiến lượng update). Đầu tiên là `Recreate` có nghĩa là sẽ xóa hết các Pod cũ đi sau đó sẽ thay bằng các Pod mới từ podTemplate mới. Thứ 2 là `Rolling Update` xóa từ từ các Pod cũ và thay thế bởi các Pod mới cho đến khi các Pod cũ bị xóa hêt.
+
+1. **Recreate**
+    
+    ```bash
+    kubectl get po -n deployment -w
+    NAME                                   READY   STATUS    RESTARTS   AGE
+    recreate-deployment-7488dbfb86-4lh8s   1/1     Running   0          2m40s
+    recreate-deployment-7488dbfb86-4lh8s   1/1     Terminating   0          2m45s
+    recreate-deployment-7488dbfb86-4lh8s   1/1     Terminating   0          2m46s
+    recreate-deployment-7488dbfb86-4lh8s   0/1     Terminating   0          2m47s
+    recreate-deployment-7488dbfb86-4lh8s   0/1     Terminating   0          2m47s
+    recreate-deployment-7488dbfb86-4lh8s   0/1     Terminating   0          2m47s
+    recreate-deployment-644df995b8-ktzpv   0/1     Pending       0          0s
+    recreate-deployment-644df995b8-ktzpv   0/1     Pending       0          0s
+    recreate-deployment-644df995b8-ktzpv   0/1     ContainerCreating   0          0s
+    recreate-deployment-644df995b8-ktzpv   0/1     ContainerCreating   0          0s
+    recreate-deployment-644df995b8-ktzpv   1/1     Running 
+
+    # Thấy Pod version cũ (recreate-deployment-7488dbfb86-4lh8s) bị xóa xong thì Pod mới (recreate-deployment-644df995b8-ktzpv) mới được tạo, chỉ có duy nhất một version của Pod ở một thời điểm.
+    ```
+2. **Rolling Update**
+    > file: learn-k8s/3.core-components/3.6-deployment/hands-on/4.deployment-rollingUpdate-strategy.yaml
+
+    Với kiểu `Recreate` thì Pod cũ sẽ xóa hết sau đó Pod mới deploy sau. Điều này có thể làm cho application xảy ra downtime khi mà version cũ thì bị xóa còn version mới thì chưa sẵn sàng để nhận request hoặc trong quá trình deployment Pod mới bị vấn đề gì đó khiến lỗi => application bị downtime. Kubernetes có hỗ trợ các Update Deployment đó là `Rolling Update` cung cấp thêm các cấu hình để phù hợp cho các tình hương khi Update Deployment.
+
+    - **Max Surge**
+
+        Số lượng Pod tối đa được tạo mới. VD: Deployment có replicaSet = 2 pods, giờ nếu set maxSurge = 1
+        ```bash
+        maxSurge = 1, replicas = 2
+        kubectl get po -n deployment -w
+        NAME                              READY   STATUS    RESTARTS   AGE
+        # Đây là 2 Pod cũ trước khi update Deployment.
+        rolling-update-595b6dd75d-cslbv (Old Pod 1)  1/1     Running   0          22s
+        rolling-update-595b6dd75d-lhz65 (Old Pod 2)  1/1     Running   0          22s
+        
+        # Thực hiện Update Deployment.
+        rolling-update-59f9d6884d-86q7k (new Pod 1)  0/1     Pending   0          0s
+        rolling-update-59f9d6884d-86q7k (new Pod 1)  0/1     Pending   0          0s
+        rolling-update-59f9d6884d-86q7k (new Pod 1)  0/1     ContainerCreating   0          0s
+        rolling-update-59f9d6884d-86q7k (new Pod 1)  0/1     ContainerCreating   0          1s
+        rolling-update-59f9d6884d-86q7k (new Pod 1)  1/1     Running             0          2s
+
+        # Lúc này có 3 Pod đều running (2 Pod cũ + 1 Pod mới)
+        # Sau khi Pod (new Pod 1) ở trạng thái running thì lần lượt các Pod cũ (Old Pod 1) sẽ bị xóa.
+        rolling-update-595b6dd75d-cslbv   1/1     Terminating         0          40s
+
+        # Sau khi Pod (Old Pod 1) ở trạng thái Terminating thì sẽ có tiếp tục một Pod mới đc tạo.
+        rolling-update-59f9d6884d-gpnkc (Pod new 2)  0/1     Pending             0          0s
+        rolling-update-59f9d6884d-gpnkc (Pod new 2)  0/1     Pending             0          0s
+        rolling-update-59f9d6884d-gpnkc (Pod new 2)  0/1     ContainerCreating   0          0s
+
+        rolling-update-595b6dd75d-cslbv (Old Pod 1)  1/1     Terminating         0          40s
+
+        rolling-update-59f9d6884d-gpnkc (Pod new 2)  0/1     ContainerCreating   0          1s
+        rolling-update-59f9d6884d-gpnkc (Pod new 2)  1/1     Running             0          1s
+
+        # Sau khi Pod (Pod new 2) được tạo và ở trạng thái running thì Pod cũ (Old Pod 2) sẽ bị xóa.
+        rolling-update-595b6dd75d-cslbv (Old Pod 1)  0/1     Terminating         0          41s
+        rolling-update-595b6dd75d-cslbv (Old Pod 1)  0/1     Terminating         0          41s
+        rolling-update-595b6dd75d-lhz65 (Old Pod 2)  1/1     Terminating         0          41s
+        rolling-update-595b6dd75d-cslbv (Old Pod 1)  0/1     Terminating         0          41s
+        rolling-update-595b6dd75d-lhz65 (Old Pod 2)  1/1     Terminating         0          71s
+        rolling-update-595b6dd75d-lhz65 (Old Pod 2)  0/1     Terminating         0          72s
+        rolling-update-595b6dd75d-lhz65 (Old Pod 2)  0/1     Terminating         0          72s
+        rolling-update-595b6dd75d-lhz65 (Old Pod 2)  0/1     Terminating         0          72s
+
+        # Sau khi Rolling Update xong thi sẽ có 2 Pod mới
+        kubectl get all -n deployment
+        NAME                                  READY   STATUS    RESTARTS   AGE
+        pod/rolling-update-59f9d6884d-86q7k   1/1     Running   0          21m
+        pod/rolling-update-59f9d6884d-gpnkc   1/1     Running   0          21m
+        ```
+    
+  

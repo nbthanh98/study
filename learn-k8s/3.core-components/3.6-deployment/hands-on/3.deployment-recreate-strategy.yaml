@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: recreate-deployment
+  labels:
+    app: recreate-deployment
+spec:
+  selector:
+    matchLabels:
+      app: recreate-deployment
+  replicas: 1
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: recreate-deployment
+    spec:
+      containers:
+      - name: recreate-deployment
+        image: thanhnb1/demo:v4
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 100m
+            memory: 100Mi
+      restartPolicy: Always
