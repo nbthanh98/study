@@ -292,7 +292,9 @@ Trong Kubernetes Deployment có thể thay đổi một vài resource như:
 Kubernetes thì hỗ trợ 2 kiểu `update strategies` (chiến lượng update). Đầu tiên là `Recreate` có nghĩa là sẽ xóa hết các Pod cũ đi sau đó sẽ thay bằng các Pod mới từ podTemplate mới. Thứ 2 là `Rolling Update` xóa từ từ các Pod cũ và thay thế bởi các Pod mới cho đến khi các Pod cũ bị xóa hêt.
 
 1. **Recreate**
-    
+    > file: learn-k8s/3.core-components/3.6-deployment/hands-on/3.deployment-recreate-strategy.yaml
+
+    ![](./images/3.png)
     ```bash
     kubectl get po -n deployment -w
     NAME                                   READY   STATUS    RESTARTS   AGE
@@ -312,12 +314,30 @@ Kubernetes thì hỗ trợ 2 kiểu `update strategies` (chiến lượng update
     ```
 2. **Rolling Update**
     > file: learn-k8s/3.core-components/3.6-deployment/hands-on/4.deployment-rollingUpdate-strategy.yaml
+    
+    ![](./images/4.png)
+
+    Với kiểu RollingUpdate thì Deployment sẽ chọn một hoặc nhiều (dựa vào `maxUnavailable`) để xóa, sau đó tạo thêm Pod (theo podTemplate mới) quá trình này tiếp tục cho đến khi tất cả các Pod đã được Update.  
 
     Với kiểu `Recreate` thì Pod cũ sẽ xóa hết sau đó Pod mới deploy sau. Điều này có thể làm cho application xảy ra downtime khi mà version cũ thì bị xóa còn version mới thì chưa sẵn sàng để nhận request hoặc trong quá trình deployment Pod mới bị vấn đề gì đó khiến lỗi => application bị downtime. Kubernetes có hỗ trợ các Update Deployment đó là `Rolling Update` cung cấp thêm các cấu hình để phù hợp cho các tình hương khi Update Deployment.
 
     - **Max Surge**
 
-        Số lượng Pod tối đa được tạo mới. VD: Deployment có replicaSet = 2 pods, giờ nếu set maxSurge = 1
+        Số lượng Pods có thể thêm trên cùng 1 thời điểm. Giả sử để maxSurge = 1, ReplicaSet=2 thì số lượng Pod có thể thêm là 1 Pod (maxSurge = 1), số lượng Pods tối đa running là `1 (maxSurge = 1) + 2 (replicas = 2) = 3` Pod.
+        ```powershell
+        maxSurge = 1, replicas = 2
+        Step 0: [Pod 1.0, Pod 1.0]
+        Step 1: [Pod 2.0, Pod 1.0, Pod 1.0]
+        Step 2: [Pod 2.0, Pod 1.0]
+        Step 3: [Pod 2.0, Pod 2.0, Pod 1.0]
+        Step 4: [Pod 2.0, Pod 2.0]
+
+        maxSurge = 100%, replicas = 5
+        Step 0: [Pod 1.0 x5]
+        Step 1: [Pod 2.0 x5, Pod 1.0 x5]
+        ...
+        Step n: [Pod 2.0 x5]
+        ```
         ```bash
         maxSurge = 1, replicas = 2
         kubectl get po -n deployment -w
@@ -364,4 +384,85 @@ Kubernetes thì hỗ trợ 2 kiểu `update strategies` (chiến lượng update
         pod/rolling-update-59f9d6884d-gpnkc   1/1     Running   0          21m
         ```
     
-  
+    - **maxUnavailable** (Số lượng Pod bị xóa trong quá trình Update)
+        
+        `maxSurge` quyết định số lượng Pod (new) được tạo mới. `maxUnavailable` quyết định số lượng Pod bị xóa, trong trường hợp dưới  `maxUnavailable=1` số lượng Pod bị xóa tại một thời điểm là 1.
+        ```bash
+        maxUnavailable = 1, replicas = 2
+
+        Step 0: [Pod 1.0, Pod 1.0]
+        Step 1: [Pod 1.0]
+        Step 2: [Pod 2.0, Pod 1.0]
+        Step 3: [Pod 2.0]
+        Step 4: [Pod 2.0, Pod 2.0]
+        ```
+        ```bash
+        # maxUnavailable = 1 (tại một thời điểm chỉ có 1 Pod bị xóa), replicas = 4.     
+
+        kubectl get po  -n depyment -w 
+        NAME                              READY   STATUS    RESTARTS   AGE
+        rolling-update-7d54fc9549-dlv52   1/1     Running   0          2m27s
+        rolling-update-7d54fc9549-tdg54   1/1     Running   0          2m27s
+        rolling-update-7d54fc9549-t5wr6   1/1     Running   0          2m27s
+        rolling-update-7d54fc9549-lwxvk   1/1     Running   0          22s
+        
+        # Pod mới đang ở trạng thái pennding chờ 1 Pod cũ được chọn để xóa.
+        rolling-update-75654df5bb-zv8db   0/1     Pending   0          0s
+        rolling-update-75654df5bb-zv8db   0/1     Pending   0          0s
+        # Pod cũ bắt đầu bị xóa
+        rolling-update-7d54fc9549-lwxvk   1/1     Terminating   0          48s  
+        rolling-update-75654df5bb-zv8db   0/1     ContainerCreating   0          0s
+        rolling-update-75654df5bb-ns4k2   0/1     Pending             0          0s
+        rolling-update-75654df5bb-ns4k2   0/1     Pending             0          0s
+        rolling-update-75654df5bb-ns4k2   0/1     ContainerCreating   0          0s
+        rolling-update-7d54fc9549-lwxvk   1/1     Terminating         0          48s
+        rolling-update-75654df5bb-zv8db   0/1     ContainerCreating   0          0s
+        rolling-update-75654df5bb-ns4k2   0/1     ContainerCreating   0          0s
+        rolling-update-7d54fc9549-lwxvk   0/1     Terminating         0          49s
+        rolling-update-7d54fc9549-lwxvk   0/1     Terminating         0          49s
+        rolling-update-7d54fc9549-lwxvk   0/1     Terminating         0          49s
+
+        # Pod mới đầu tiên ở trạng thái running.
+        rolling-update-75654df5bb-zv8db   1/1     Running             0          3s
+        # Tiếp tục Pod cũ thứ 2 được chọn để xóa.
+        rolling-update-7d54fc9549-dlv52   1/1     Terminating         0          2m56s
+        rolling-update-75654df5bb-ngrlw   0/1     Pending             0          0s
+        rolling-update-75654df5bb-ngrlw   0/1     Pending             0          0s
+        rolling-update-75654df5bb-ngrlw   0/1     ContainerCreating   0          0s
+        rolling-update-75654df5bb-ngrlw   0/1     ContainerCreating   0          1s
+        rolling-update-7d54fc9549-dlv52   1/1     Terminating         0          2m57s
+        rolling-update-7d54fc9549-dlv52   0/1     Terminating         0          2m58s
+        rolling-update-7d54fc9549-dlv52   0/1     Terminating         0          2m58s
+        rolling-update-7d54fc9549-dlv52   0/1     Terminating         0          2m58s
+        
+        # Pod mới thứ 2 ở trạng thái running.
+        rolling-update-75654df5bb-ns4k2   1/1     Running             0          5s
+        # Pod cũ thứ 3 bị xóa
+        rolling-update-7d54fc9549-tdg54   1/1     Terminating         0          2m58s
+        rolling-update-75654df5bb-bqsfn   0/1     Pending             0          0s
+        rolling-update-75654df5bb-bqsfn   0/1     Pending             0          1s
+        rolling-update-75654df5bb-bqsfn   0/1     ContainerCreating   0          1s
+        rolling-update-75654df5bb-bqsfn   0/1     ContainerCreating   0          1s
+        rolling-update-7d54fc9549-tdg54   1/1     Terminating         0          2m59s
+        rolling-update-7d54fc9549-tdg54   0/1     Terminating         0          3m
+        rolling-update-7d54fc9549-tdg54   0/1     Terminating         0          3m
+        rolling-update-7d54fc9549-tdg54   0/1     Terminating         0          3m
+        
+        # Pod mới thứ 3 ở trạng thái running.
+        rolling-update-75654df5bb-ngrlw   1/1     Running             0          4s
+        rolling-update-7d54fc9549-t5wr6   1/1     Terminating         0          3m
+        rolling-update-7d54fc9549-t5wr6   1/1     Terminating         0          3m2s
+        rolling-update-7d54fc9549-t5wr6   0/1     Terminating         0          3m2s
+        rolling-update-7d54fc9549-t5wr6   0/1     Terminating         0          3m2s
+        rolling-update-7d54fc9549-t5wr6   0/1     Terminating         0          3m2s
+
+        # Pod mới thứ 4 ở trạng thái running.
+        rolling-update-75654df5bb-bqsfn   1/1     Running             0          5s
+
+        kubectl get po -n deployment
+        NAME                              READY   STATUS    RESTARTS   AGE
+        rolling-update-75654df5bb-zv8db   1/1     Running   0          17m
+        rolling-update-75654df5bb-ns4k2   1/1     Running   0          17m
+        rolling-update-75654df5bb-ngrlw   1/1     Running   0          17m
+        rolling-update-75654df5bb-bqsfn   1/1     Running   0          17m
+        ``` 
