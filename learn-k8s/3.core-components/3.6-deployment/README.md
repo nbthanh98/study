@@ -466,3 +466,7 @@ Kubernetes thì hỗ trợ 2 kiểu `update strategies` (chiến lượng update
         rolling-update-75654df5bb-ngrlw   1/1     Running   0          17m
         rolling-update-75654df5bb-bqsfn   1/1     Running   0          17m
         ``` 
+
+## Xem thêm về  Deployment:
+- https://medium.com/kokster/updating-kubernetes-deployments-867421d4e337
+- https://www.educative.io/blog/kubernetes-deployments-strategies  
