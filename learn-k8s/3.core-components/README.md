@@ -1,4 +1,4 @@
-## **# Core Components**
+## **3 Core Components**
 
 **[1. Working with Pod.](https://github.com/nbthanh98/study/blob/master/learn-k8s/3.core-components/3.1-working-with-pod/README.md)** 
 
