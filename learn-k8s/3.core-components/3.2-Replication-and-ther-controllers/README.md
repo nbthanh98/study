@@ -1,4 +1,4 @@
-# Replication and other controllers: deploying managed pods
+# 3.2 Replication and other controllers: deploying managed pods
 
 ## **1. Giới thiệu**
 Trong phần trước thì chúng ta đã biết Pod là đơn vị nhỏ nhất trong Kubernetes, học cách tạo Pod, chạy 1 hoặc nhiều containers trong một Pod, các containers trong cùng một Pod thì chia sẻ với nhau: network space, volumes,..
