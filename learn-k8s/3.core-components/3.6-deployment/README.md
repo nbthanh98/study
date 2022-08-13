@@ -1,4 +1,4 @@
-# Deployment
+# 3.6 Deployment
 Những phần trước thì chúng ta đang chạy các service bên trong các `Pod`, quản lý số lượng `Pod` bằng `ReplicationController` hoặc `ReplicaSet`. Ở phần này thì giới thiệu thêm 1 Object nữa trong Kubernetes đó là: `Deployment`. Object `Deployment` sẽ có thể xử lý giống như `POd`, `ReplicationController` và `ReplicaSet` chỉ trong 1 file deployment.yaml , 
 ## **1. Updating version applications running in pods managed by ReplicationController or ReplicaSet**
 ![](./images/1.png)
