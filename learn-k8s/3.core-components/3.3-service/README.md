@@ -1,4 +1,4 @@
-# **#Services: enabling clients to discover and talk to pods**
+# **3.3 Services: enabling clients to discover and talk to pods**
 ## **1. Giới thiệu**
 Ở những phần trước thì mình có tìm hiểu các tạo Pod, sử dụng ReplicationController và ReplicaSet để quản lý lifeCycle của Pod. Trong một hệ thống (VD: Microservice) các services sẽ phải tương tác với các service khác bên trong Cluster, hoặc có thể là nhận request từ bên ngoài Cluster. Pod sẽ được assigned một IP khi scheduled vào một node nào đó, có thể access Pod thông qua IP và Port của Pod (chỉ có thể truy cập bên trong Cluster).
 
