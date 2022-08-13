@@ -6,7 +6,7 @@
 * [Docker handbook.](learn-docker/README.md)
   * [DOCKER-NETWORK](learn-docker/DOCKER-NETWORK.md)
   * [Docker Volume](learn-docker/DOCKER-VOLUME.md)
-* [#k8s enough to use](learn-k8s/README.md)
+* [Kubernetes enough to use](learn-k8s/README.md)
   * [1.k8s-overview](learn-k8s/1.k8s-overview/README.md)
     * [Kubernetes overview](learn-k8s/1.k8s-overview/K8S\_OVERVIEW.md)
   * [2.kubernetes-architecture](learn-k8s/2.kubernetes-architecture/README.md)
