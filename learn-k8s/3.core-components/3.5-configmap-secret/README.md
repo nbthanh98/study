@@ -1,4 +1,4 @@
-# ConfigMaps and Secrets: configuring applications
+# 3.5 ConfigMaps and Secrets: configuring applications
 
 ## **1. Introduction ConfigMaps**
 Các Service thường có file cấu hình để tùy chỉnh theo từng môi trường vd: Develop, UAT, PROD, mỗi môi trường này đều có những biến môi trường khác nhau. Đối với việc deploy các service trên Kubernetes thì sẽ tạo ra các file configMap (chứa các biến môi trường) trương ứng với các môi trường. Sẽ có 2 cách để inject các biến môi trường vào containers: thông qua các biến môi trường, thông qua Volume.
