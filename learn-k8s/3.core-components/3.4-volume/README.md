@@ -1,4 +1,4 @@
-# #Volumes: attaching disk storage to containers
+# 3.4 Volumes: attaching disk storage to containers
 Ở những phần trước thì đã tìm hiểu về Pod, ReplicationController, ReplicaSet, có vấn đề là khi Pod vì một lý do nào đó mà bị xóa thì các containers bên trong Pod cũng bị xóa => dữ liệu sẽ bị mất. Trong một vài trường hợp thì mình muốn rằng dù containers bên trong Pod được tạo mới thì vẫn còn dữ liệu của containers trước đó. Kubernetes mới đẻ ra một object là `volume`.
 
 Volume được định nghĩa như là 1 phần của Pod, có lifecycle cùng với Pod, có nghĩa là volume sẽ được tạo khi Pod started và bị xóa khi Pod deleted. Sau khi container restarted, container mới có thể nhìn thấy data trong `Volume` mà container trước đó đã tạo ra. Nếu một Pod có nhiều containers thì các containers này có thể dùng chung `volume`.

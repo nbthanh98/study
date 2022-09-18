@@ -1,10 +1,12 @@
-## #k8s enough to use
-### #Nguồn tham khảo:
-- https://github.com/omerbsezer/Fast-Kubernetes/blob/main/README.md#containerization
-- The Kubernetes Book.
+# Kubernetes enough to use
 
-[1: k8s-overview](https://github.com/nbthanh98/study/blob/master/learn-k8s/1.k8s-overview/K8S_OVERVIEW.md).
+## #Nguồn tham khảo:
 
-[2: Kubernetes Architecture](https://github.com/nbthanh98/study/blob/master/learn-k8s/2.kubernetes-architecture/kubernetes_architecture.md).
+* https://github.com/omerbsezer/Fast-Kubernetes/blob/main/README.md#containerization
+* The Kubernetes Book.
 
-[3: Core components](https://github.com/nbthanh98/study/blob/master/learn-k8s/3.core-components/README.md).
+[1: k8s-overview](1.k8s-overview/K8S\_OVERVIEW.md).
+
+[2: Kubernetes Architecture](2.kubernetes-architecture/kubernetes\_architecture.md).
+
+[3: Core components](3.core-components/).
