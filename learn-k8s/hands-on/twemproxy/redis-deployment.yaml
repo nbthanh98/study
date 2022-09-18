@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis01
+spec:
+  selector:
+    matchLabels:
+      app: redis01
+  template:
+    metadata:
+      labels:
+        app: redis01
+    spec:
+      containers:
+      - name: redis01
+        image: bitnami/redis:3.2.8-r2
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis02
+spec:
+  selector:
+    matchLabels:
+      app: redis02
+  template:
+    metadata:
+      labels:
+        app: redis02
+    spec:
+      containers:
+      - name: redis02
+        image: bitnami/redis:3.2.8-r2
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis01
+spec:
+  selector:
+    app: redis01
+  ports:
+  - port: 6379
+    targetPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis02
+spec:
+  selector:
+    app: redis02
+  ports:
+  - port: 6379
+    targetPort: 6379
