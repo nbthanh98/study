@@ -1,5 +1,6 @@
 # Twemproxy on kubernetes
 Twemproxy là opensource giúp điều phối cached data giữa các Redis instances. [Github repo](https://github.com/twitter/twemproxy).
+![](1.png)
 ### Deploy Twemproxy on kubernetes
 
 ```yaml
