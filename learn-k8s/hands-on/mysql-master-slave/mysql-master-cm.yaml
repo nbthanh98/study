@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-master-config
+data:
+  MYSQL_REPLICATION_MODE: master
+  MYSQL_REPLICATION_USER: repl_user
+  MYSQL_REPLICATION_PASSWORD: repl_password
+  MYSQL_ROOT_PASSWORD: master_root_password
+  MYSQL_USER: my_user
+  MYSQL_PASSWORD: my_password
+  MYSQL_DATABASE: my_database

@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: mysql-master-pv
+  labels:
+    name: mysql-master-pv
+spec:
+  storageClassName: mysql-master
+  capacity:
+    storage: 8Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: "/home/nbt/thanhnb/study/learn-k8s/hands-on/mysql-master-slave/mysql-volume/master"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mysql-master-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: mysql-master
+  resources:
+    requests:
+      storage: 8Gi
