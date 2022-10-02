@@ -1,0 +1,263 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-master01
+spec:
+  selector:
+    matchLabels:
+      app: redis-master01
+  template:
+    metadata:
+      labels:
+        app: redis-master01
+    spec:
+      containers:
+      - name: redis-master01
+        image: redis:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - mountPath: /usr/local/etc/redis
+            name: config-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: redis-cluster-configuration
+            items:
+              - key: cluster-config.conf
+                path: redis.conf
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-master02
+spec:
+  selector:
+    matchLabels:
+      app: redis-master02
+  template:
+    metadata:
+      labels:
+        app: redis-master02
+    spec:
+      containers:
+      - name: redis-master02
+        image: redis:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - mountPath: /usr/local/etc/redis
+            name: config-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: redis-cluster-configuration
+            items:
+              - key: cluster-config.conf
+                path: redis.conf
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-master03
+spec:
+  selector:
+    matchLabels:
+      app: redis-master03
+  template:
+    metadata:
+      labels:
+        app: redis-master03
+    spec:
+      containers:
+      - name: redis-master03
+        image: redis:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - mountPath: /usr/local/etc/redis
+            name: config-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: redis-cluster-configuration
+            items:
+              - key: cluster-config.conf
+                path: redis.conf
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave01
+spec:
+  selector:
+    matchLabels:
+      app: redis-slave01
+  template:
+    metadata:
+      labels:
+        app: redis-slave01
+    spec:
+      containers:
+      - name: redis-slave01
+        image: redis:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - mountPath: /usr/local/etc/redis
+            name: config-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: redis-cluster-configuration
+            items:
+              - key: cluster-config.conf
+                path: redis.conf
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave02
+spec:
+  selector:
+    matchLabels:
+      app: redis-slave02
+  template:
+    metadata:
+      labels:
+        app: redis-slave02
+    spec:
+      containers:
+      - name: redis-slave02
+        image: redis:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - mountPath: /usr/local/etc/redis
+            name: config-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: redis-cluster-configuration
+            items:
+              - key: cluster-config.conf
+                path: redis.conf
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave03
+spec:
+  selector:
+    matchLabels:
+      app: redis-slave03
+  template:
+    metadata:
+      labels:
+        app: redis-slave03
+    spec:
+      containers:
+      - name: redis-slave03
+        image: redis:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+          - mountPath: /usr/local/etc/redis
+            name: config-volume
+      volumes:
+        - name: config-volume
+          configMap:
+            name: redis-cluster-configuration
+            items:
+              - key: cluster-config.conf
+                path: redis.conf
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master01
+spec:
+  selector:
+    app: redis-master01
+  ports:
+  - port: 6379
+    targetPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master02
+spec:
+  selector:
+    app: redis-master02
+  ports:
+  - port: 6379
+    targetPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-master03
+spec:
+  selector:
+    app: redis-master03
+  ports:
+  - port: 6379
+    targetPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-slave01
+spec:
+  selector:
+    app: redis-slave01
+  ports:
+  - port: 6379
+    targetPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-slave02
+spec:
+  selector:
+    app: redis-slave02
+  ports:
+  - port: 6379
+    targetPort: 6379
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis-slave03
+spec:
+  selector:
+    app: redis-slave03
+  ports:
+  - port: 6379
+    targetPort: 6379

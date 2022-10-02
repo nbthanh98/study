@@ -1,0 +1,15 @@
+apiVersion: v1
+data:
+  cluster-config.conf: |-
+    port 6379
+    cluster-enabled yes
+    cluster-config-file nodes.conf
+    cluster-node-timeout 5000
+    appendonly yes
+kind: ConfigMap
+metadata:
+  creationTimestamp: "2022-09-27T17:05:07Z"
+  name: redis-cluster-configuration
+  namespace: redis
+  resourceVersion: "3168996"
+  uid: d3feec80-01b8-4265-9663-02a9b0a95a47
