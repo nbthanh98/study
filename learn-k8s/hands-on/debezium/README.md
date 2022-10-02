@@ -66,6 +66,12 @@
 
 ## Problem I: Rolled Over Bin-logs
 
+```sql
+SHOW BINLOG EVENTS IN 'mysql-bin.000004';
+
+SHOW BINARY LOGS;
+```
+
 https://levelup.gitconnected.com/fixing-debezium-connectors-when-they-break-on-production-49fb52d6ac4e
 
 https://thedataguy.in/debezium-mysql-snapshot-from-read-replica-and-resume-from-master/
