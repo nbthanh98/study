@@ -81,3 +81,5 @@ https://thedataguy.in/debezium-mysql-snapshot-from-read-replica-and-resume-from-
 https://thedataguy.in/build-production-grade-debezium-with-confluent-kafka-cluster/
 
 https://www.thegeekstuff.com/2017/08/mysqlbinlog-examples/
+
+https://gist.github.com/tiagocardosos/0d8e7e95316696be7a400e2c60909c43
