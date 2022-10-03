@@ -81,3 +81,61 @@ curl -X PUT 'localhost: 8083/connectors/customers-connector/config' \
     "table.include.list": "inventory.customers",
     "debezium.source.database.history": "io.debezium.relational.history.KafkaDatabaseHistory"
 }'
+
+curl -X PUT 'localhost: 8083/connectors/customers-connector/config' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+    "name": "customers-connector",
+    "snapshot.mode": "initial",
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.user": "debezium",
+    "database.server.id": "184059",
+    "tasks.max": "1",
+    "database.history.kafka.bootstrap.servers": "PLAINTEXT://dbzui-kafka:9092",
+    "database.history.kafka.topic": "schema-changes.inventory",
+    "database.server.name": "fullfillment",
+    "schema.history.internal.kafka.bootstrap.servers": "dbzui-kafka:9092",
+    "database.port": "3306",
+    "topic.prefix": "debezium",
+    "schema.history.internal.kafka.topic": "schema-history",
+    "database.hostname": "dbzui-db-mysql",
+    "database.password": "debezium",
+    "name": "customers-connector",
+    "table.include.list": "inventory.customers",
+    "debezium.source.database.history": "io.debezium.relational.history.KafkaDatabaseHistory",
+    "table.whitelist": "customers",
+    "snapshot.select.statement.overrides": "customers",
+    "snapshot.select.statement.overrides.inventory.customers": "select * from customers s where s.created_at >= \"2022-10-03 22:16:00\""
+}'
+
+curl -X PUT 'localhost: 8083/connectors/customers-connector/config' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+    "name": "customers-connector",
+    "snapshot.mode": "when_needed",
+    "connector.class": "io.debezium.connector.mysql.MySqlConnector",
+    "database.user": "debezium",
+    "database.server.id": "184059",
+    "tasks.max": "1",
+    "database.history.kafka.bootstrap.servers": "PLAINTEXT://dbzui-kafka:9092",
+    "database.history.kafka.topic": "schema-changes.inventory",
+    "database.server.name": "fullfillment",
+    "schema.history.internal.kafka.bootstrap.servers": "dbzui-kafka:9092",
+    "database.port": "3306",
+    "topic.prefix": "debezium",
+    "schema.history.internal.kafka.topic": "schema-history",
+    "database.hostname": "dbzui-db-mysql",
+    "database.password": "debezium",
+    "name": "customers-connector",
+    "table.include.list": "inventory.customers",
+    "debezium.source.database.history": "io.debezium.relational.history.KafkaDatabaseHistory",
+    "table.whitelist": "inventory.customers",
+    "snapshot.select.statement.overrides": "inventory.customers",
+    "snapshot.select.statement.overrides.inventory.customers": "select * from inventory.customers s where s.created_at >= \"2022-10-03 23:21:00\" ORDER BY s.created_at"
+}'
+
+
+
+
+
+
