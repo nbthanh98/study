@@ -42,27 +42,55 @@
 - Tao connector:
 
   ```powershell
-  curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{
-    "name": "customers-connector",
-    "config": {
-        "connector.class": "io.debezium.connector.mysql.MySqlConnector",
-        "tasks.max": "1",
-        "database.hostname": "dbzui-db-mysql",
-        "database.port": "3306",
-        "database.user": "debezium",
-        "database.password": "debezium",
-        "database.server.id": "184059",
-        "database.server.name": "fullfillment",
-        "table.include.list": "inventory.customers",
-        "database.history.kafka.bootstrap.servers": "PLAINTEXT://dbzui-kafka:9092",
-        "database.history.kafka.topic": "schema-changes.inventory",
-        "debezium.source.database.history": "io.debezium.relational.history.KafkaDatabaseHistory",
-        "schema.history.internal.kafka.topic": "schema-history",
-        "schema.history.internal.kafka.bootstrap.servers": "dbzui-kafka:9092",
-        "topic.prefix": "debezium"
-    }
-  }'
+
+  curl -i -X GET localhost:8083/connectors/customers-connector/status
   ```
+
+curl -X PUT 'localhost:8083/connectors/customers-connector/config' \
+-H 'Content-Type: application/json' \
+--data-raw '{
+"name": "customers-connector",
+"snapshot.mode": "initial",
+"connector.class": "io.debezium.connector.mysql.MySqlConnector",
+"database.user": "debezium",
+"database.server.id": "184059",
+"tasks.max": "1",
+"database.history.kafka.bootstrap.servers": "PLAINTEXT://dbzui-kafka:9092",
+"database.history.kafka.topic": "schema-changes.inventory",
+"database.server.name": "fullfillment",
+"schema.history.internal.kafka.bootstrap.servers": "dbzui-kafka:9092",
+"database.port": "3306",
+"topic.prefix": "debezium",
+"schema.history.internal.kafka.topic": "schema-history",
+"database.hostname": "dbzui-db-mysql",
+"database.password": "debezium",
+"name": "customers-connector",
+"table.include.list": "inventory.customers",
+"debezium.source.database.history": "io.debezium.relational.history.KafkaDatabaseHistory"
+}'
+
+curl -i -X POST -H "Accept:application/json" -H "Content-Type:application/json" localhost:8083/connectors/ -d '{
+"name": "customers-connector",
+"config": {
+"connector.class": "io.debezium.connector.mysql.MySqlConnector",
+"tasks.max": "1",
+"database.hostname": "dbzui-db-mysql",
+"database.port": "3306",
+"database.user": "debezium",
+"database.password": "debezium",
+"database.server.id": "184059",
+"database.server.name": "fullfillment",
+"table.include.list": "inventory.customers",
+"database.history.kafka.bootstrap.servers": "PLAINTEXT://dbzui-kafka:9092",
+"database.history.kafka.topic": "schema-changes.inventory",
+"debezium.source.database.history": "io.debezium.relational.history.KafkaDatabaseHistory",
+"schema.history.internal.kafka.topic": "schema-history",
+"schema.history.internal.kafka.bootstrap.servers": "dbzui-kafka:9092",
+"topic.prefix": "debezium"
+}
+}'
+
+````
 
 ## Problem I: Rolled Over Bin-logs
 
@@ -70,7 +98,7 @@
 SHOW BINLOG EVENTS IN 'mysql-bin.000004';
 
 SHOW BINARY LOGS;
-```
+````
 
 https://suchit-g.medium.com/debezium-production-deployment-preparation-b12c5b9de767
 
