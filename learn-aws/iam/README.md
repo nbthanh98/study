@@ -4,10 +4,11 @@
 
 - [AWS Identity and Access Management (IAM)](#aws-identity-and-access-management-iam)
   - [**1. Introduction**](#1-introduction)
-  - [**2. Defining permissions with an IAM identity policy**](#2-defining-permissions-with-an-iam-identity-policy)
-  - [**3. Hands-on**](#3-hands-on)
-    - [**3.1. Tạo một tài khoản mới (IAM user) và define `Policy` phân quyền truy cập đến S3 Bucket.**](#31-tạo-một-tài-khoản-mới-iam-user-và-define-policy-phân-quyền-truy-cập-đến-s3-bucket)
-    - [**3.2 Assign IAM Role for EC2 Instance**](#32-assign-iam-role-for-ec2-instance)
+  - [**2. Users for authentication, and groups to organize users (hands-on 4.1)**](#2-users-for-authentication-and-groups-to-organize-users-hands-on-41)
+  - [**3. Authenticating AWS resources with roles (hands-on 4.2)**](#3-authenticating-aws-resources-with-roles-hands-on-42)
+  - [**4. Hands-on**](#4-hands-on)
+    - [**4.1. Tạo một tài khoản mới (IAM user) và define `Policy` phân quyền truy cập đến S3 Bucket.**](#41-tạo-một-tài-khoản-mới-iam-user-và-define-policy-phân-quyền-truy-cập-đến-s3-bucket)
+    - [**4.2 Assign IAM Role for EC2 Instance**](#42-assign-iam-role-for-ec2-instance)
 
 ## **1. Introduction**
 
@@ -20,68 +21,88 @@ Là một service giúp quản lý các quyền truy cập đến các resource 
 - `IAM role`: is used to authenticate AWS resources.
 - `IAM identity policy`: is used to define the permissions for a user, group, or role.
 
-## **2. Defining permissions with an IAM identity policy**
+## **2. Users for authentication, and groups to organize users (hands-on 4.1)**
 
-Để cấp quyền cho IAM User hoặc IAM role quản lý các resources trên AWS thì cần define các `IAM identity policies` rồi gán cho IAM user hoặc IAM role. `Identity policies` được define trong JSON và chứa một hoặc nhiều `statement`, các statement có thể là `allow or deny` cho một hoặc nhiều action trên một hoặc nhiều resources AWS.
+Một User có thể `authenticate` bằng cách sử dụng username/password hoặc là access keys. Khi mà dùng `Management Console` thì cần user/pass, còn nếu mà dùng cli thì dùng access keys.
 
-```json
-{
-  "Version": "2012-10-17", // Version này là fix, như apiVersion trong K8s vậy.
-  "Statement": [
-    // Danh sách các statement
+Để gán user có quyền được thao tác với một resouces nào đó trên AWS thì cần:
+
+- Tạo Policy.
+
+  Vào Management Console -> IAM -> Policy
+
+  ```json
+  {
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Action": "ec2:*",
+        "Resource": "*",
+        "Condition": {
+          "StringEquals": {
+            "ec2:ResourceTag/Env": "dev"
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": "ec2:Describe*",
+        "Resource": "*"
+      },
+      {
+        "Effect": "Deny",
+        "Action": ["ec2:DeleteTags", "ec2:CreateTags"],
+        "Resource": "*"
+      }
+    ]
+  }
+  ```
+
+  - `Version`: là fix luôn là `2012-10-17`, giống như apiVersion bên K8s vây.
+  - `Statement`: là 1 mảng các object, trong các object này thì định nghĩa các action, effect, resource tương tác, ...
+  - `Condition`: thêm các điều kiện.
+  - Ở Policy json trên đều để `"Resource": "*"` tác động đến tất cả các resource, giờ muốn define chỉ tác động đến một số các resources cụ thể thôi thì sẽ dùng Amazon Resource Name (ARN):
+
+    ![](./images/2.png)
+
+    Lấy thông tin ARN này ở phần properties của service. Lúc đó thì cái `Policy` json sẽ như sau:
+
+    ```json
     {
-      "Effect": "Allow", // Effect: (Allow/Deny), ở đây là Allow -> cho phép thực hiện các action ở field "action".
-      "Action": "ec2:*", // thực hiện tất cả các action trên EC2. vì có "*".
-      "Resource": "*" // Trên tất cả các resource.
-    }
-  ]
-}
-```
-
-Có thể định nghĩa cả `Effect` là `Allow` hoặc `Deny`. Ở đây là cho phép thực hiện tất cả các actions trên EC2 trừ action `TerminateInstances`.
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "ec2:*",
-      "Resource": "*"
-    },
-    {
-      "Effect": "Deny",
-      "Action": "ec2:TerminateInstances",
-      "Resource": "*"
-    }
-  ]
-}
-```
-
-Ở 2 Policy json trên đều để `"Resource": "*"` tác động đến tất cả các resource, giờ muốn define chỉ tác động đến một số các resources cụ thể thôi thì sẽ dùng Amazon Resource Name (ARN):
-
-![](./images/2.png)
-
-Lấy thông tin ARN này ở phần properties của service. Lúc đó thì cái `Policy` json sẽ như sau:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "ec2:TerminateInstances",
-      "Resource": [
-        "arn:aws:ec2:us-east-1:111111111111:instance/i-0b5c991e026104db9"
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Effect": "Allow",
+          "Action": "ec2:TerminateInstances",
+          "Resource": [
+            "arn:aws:ec2:us-east-1:111111111111:instance/i-0b5c991e026104db9"
+          ]
+        }
       ]
     }
-  ]
-}
-```
+    ```
 
-## **3. Hands-on**
+- Tạo IAM User, có thể gán luôn Policy cho IAM User hoặc tạo IAM User Group để có thể kế thừa lại Policy.
+  - Vào Management Console -> IAM -> IAM User Group -> Tạo Group
+  - Gán Policy mới tạo ở trên cho IAM User Group.
+  - Tạo mới 1 IAM User rồi add vào IAM User group là oke.
 
-### **3.1. Tạo một tài khoản mới (IAM user) và define `Policy` phân quyền truy cập đến S3 Bucket.**
+## **3. Authenticating AWS resources with roles (hands-on 4.2)**
+
+Đối với người dùng thì có thể authen qua user/pass hoặc access keys, vậy thì các resource tương tác với nhau thì authen thế nào?. Đó chính là sử dụng `IAM Role`.
+
+VD. Giờ EC2 muốn tương tác với S3 thì cũng có thể tạo một cái IAM User thêm policy cho IAM User này để tương tác với S3 và EC2. Khi ssh vào EC2 thì dùng `aws configure`, điền `access key` và `secret access key`, cách này đã thử và vẫn chạy đc nha, nhưng theo sách thì nó không phải là `security best practices`.
+
+Thay vì sử dụng IAM User để authen thì có thể sử dụng luôn IAM Role bất cứ khi nào cần authen AWS Resource giống như là EC2 instance. Khi mà sử dụng IAM Role thì các access key sẽ được injected vào EC2 Instance một các tự động.
+
+- Vào Management Console -> IAM -> IAM Role
+- Tạo Policy rồi gán với Role.
+- Vào EC2 -> Security -> Modify IAM Role -> Chọn Role mới tạo ở trên.
+
+## **4. Hands-on**
+
+### **4.1. Tạo một tài khoản mới (IAM user) và define `Policy` phân quyền truy cập đến S3 Bucket.**
 
 - Vào web consolve -> chọn dịch vụ IAM -> tạo tài khoản.
 
@@ -132,7 +153,7 @@ Lấy thông tin ARN này ở phần properties của service. Lúc đó thì c�
 
   ![](images/8.png)
 
-### **3.2 Assign IAM Role for EC2 Instance**
+### **4.2 Assign IAM Role for EC2 Instance**
 
 Lab được chia thành 4 phần:
 
