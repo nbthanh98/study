@@ -7,6 +7,7 @@
   - [**2. Defining permissions with an IAM identity policy**](#2-defining-permissions-with-an-iam-identity-policy)
   - [**3. Hands-on**](#3-hands-on)
     - [**3.1. Tạo một tài khoản mới (IAM user) và define `Policy` phân quyền truy cập đến S3 Bucket.**](#31-tạo-một-tài-khoản-mới-iam-user-và-define-policy-phân-quyền-truy-cập-đến-s3-bucket)
+    - [**3.2 Assign IAM Role for EC2 Instance**](#32-assign-iam-role-for-ec2-instance)
 
 ## **1. Introduction**
 
@@ -130,3 +131,87 @@ Lấy thông tin ARN này ở phần properties của service. Lúc đó thì c�
   User "quang" KHÔNG truy cập đc đến S3 bucket "thanhnb-demo-s3" vì user "quang" đang không có Policy nào gắn với resource S3 bucket "thanhnb-demo-s3".
 
   ![](images/8.png)
+
+### **3.2 Assign IAM Role for EC2 Instance**
+
+Lab được chia thành 4 phần:
+
+1.  **Launch EC2 Instances with Tags (Xem chi tiết lab [tại đây](https://catalog.us-east-1.prod.workshops.aws/workshops/f3a3e2bd-e1d5-49de-b8e6-dac361842e76/en-US/basic-modules/30-iam/iam/1-iam)).**
+
+    Sẽ tạo 2 EC2 instances: 1 instance dùng cho môi trường Dev và 1 instaince sung cho môi trường Prod. Sẽ sử dụng `tag` để phân biệt 2 instance này.
+
+    ![](./images/9.png)
+
+    - Vào [aws console](https://console.aws.amazon.com/console/home) -> search EC2 -> "Launch an instance".
+
+      Đặt tên cho EC2 instance: `prod-instance` và thêm tag "env": "prod".
+
+      ![](./images/10.png)
+
+    - Các phần chọn "Instance type", "Network settings", "Configure storage" để default, có cái "Key pair (login)" thì tạo cái key pair mới.
+    - Rồi bấm "Launch Instances" -> đợi chút cho AWS tạo Instance là Oke.
+    - Thực hiện tương tự, tạo một EC2 instance với tên là "dev-instance" và tag là "env": "dev".
+    - Đợi chút thì có 2 instance: `dev-instance` và `prod-instance`
+
+      ![](./images/11.png)
+
+2.  **Create AWS IAM Identities (Xem chi tiết lab [tại đây](https://catalog.us-east-1.prod.workshops.aws/workshops/f3a3e2bd-e1d5-49de-b8e6-dac361842e76/en-US/basic-modules/30-iam/iam/2-iam)).**
+
+    ![](./images/12.png)
+
+    Sẽ tạo `AWS IAM Identities`. `AWS IAM Identities` bao gồm: `IAM Users`, `IAM User groups`, and `IAM Roles`
+
+    - Tạo `Policy` đến gán vào `IAM User group`.
+
+      ![](./images/13.png)
+
+    - Tạo `IAM User group` tên: `dev-group`.
+
+      Vào `IAM` -> `User group` -> `create group` -> tên `dev-group` và gán policy: `DevPolicy` tạo ở trước trước -> Create group.
+
+      ![](./images/14.png)
+
+    - Tạo `IAM User` tên: `dev-user` -> thêm user này vào trong `IAM User Group`: `dev-group`.
+
+      ![](images/15.png)
+
+3.  **Test the access for resources (Xem chi tiết lab [tại đây](https://catalog.us-east-1.prod.workshops.aws/workshops/f3a3e2bd-e1d5-49de-b8e6-dac361842e76/en-US/basic-modules/30-iam/iam/3-iam)).**
+
+    - Login với tài khoản `dev-user` tạo trước đó.
+    - Vào thử dịch vụ EC2 -> thử stop `dev-instance`.
+
+      ![](./images/17.png)
+
+      User `dev-user` vì nằm trong IAM User group `dev-group` nên có Policy là: `DevPolicy` -> có thể Stop `dev-instance` thành công.
+
+    - Vào thử dịch vụ EC2 -> thử stop `prod-instance`.
+
+      ![](./images/16.png)
+
+      User `dev-user` vì nằm trong IAM User group `dev-group` nên có Policy là: `DevPolicy` -> có thể Stop `prod-instance` bị lỗi.
+
+4.  **Assign IAM Role for EC2 Instance and Test the access (Xem chi tiết lab [tại đây](https://catalog.us-east-1.prod.workshops.aws/workshops/f3a3e2bd-e1d5-49de-b8e6-dac361842e76/en-US/basic-modules/30-iam/iam/4-iam)).**
+
+    Tạo IAM Role để cho EC2 Instance có thể connect được đến S3 Bucket.
+
+    - Tạo S3 Bucket: `test-iam-role-s3`.
+
+      ![](./images/18.png)
+
+    - Tạo IAM Role, tạo Policy để gán vào IAM Role.
+
+      Vào IAM -> Role -> AWS Service -> EC2
+
+      ![](images/19.png)
+
+      Tạo IAM Role: `IAMBucketTestRole` và gán Policy: `IAMBucketTestPolicy` đã tạo từ bước trước.
+
+      ![](images/20.png)
+
+    - Vào EC2 -> Security -> Modify IAM Role -> Chọn Role `IAMBucketTestRole` mới tạo ở trên.
+
+      ![](./images/22.png)
+
+      ![](./images/24.png)
+
+      ![](./images/23.png)
