@@ -94,7 +94,7 @@ Một User có thể `authenticate` bằng cách sử dụng username/password h
 
 VD. Giờ EC2 muốn tương tác với S3 thì cũng có thể tạo một cái IAM User thêm policy cho IAM User này để tương tác với S3 và EC2. Khi ssh vào EC2 thì dùng `aws configure`, điền `access key` và `secret access key`, cách này đã thử và vẫn chạy đc nha, nhưng theo sách thì nó không phải là `security best practices`.
 
-Thay vì sử dụng IAM User để authen thì có thể sử dụng luôn IAM Role bất cứ khi nào cần authen AWS Resource giống như là EC2 instance. Khi mà sử dụng IAM Role thì các access key sẽ được injected vào EC2 Instance một các tự động.
+Thay vì sử dụng IAM User để authen thì có thể sử dụng luôn IAM Role bất cứ khi nào cần authen AWS Resource giống như là EC2 instance. Khi mà sử dụng IAM Role thì các access key sẽ được injected vào EC2 Instance một cách tự động.
 
 - Vào Management Console -> IAM -> IAM Role
 - Tạo Policy rồi gán với Role.
