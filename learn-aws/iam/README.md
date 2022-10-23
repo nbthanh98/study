@@ -212,6 +212,10 @@ Lab được chia thành 4 phần:
 
       ![](./images/22.png)
 
+      Thực hiện SSH vào EC2 Instance, chạy `aws s3 ls` thì thấy báo lỗi trên nếu mà chưa add Role `IAMBucketTestRole` vào EC2.
+
       ![](./images/24.png)
+
+      Còn nếu mà sau khi add Role `IAMBucketTestRole` vào EC2 thì chạy sẽ không còn báo lỗi nữa.
 
       ![](./images/23.png)
