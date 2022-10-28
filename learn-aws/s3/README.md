@@ -1,7 +1,11 @@
 # AWS S3 (Simple storage service)
 
+![](images/amazon-s3.png)
+
 - [AWS S3 (Simple storage service)](#aws-s3-simple-storage-service)
-  - [**1. What is AWS S3?**](#1-what-is-aws-s3)
+  - [**1. Store data challenges**](#1-store-data-challenges)
+  - [**2. What is an object store**](#2-what-is-an-object-store)
+  - [**3. Amazon S3**](#3-amazon-s3)
   - [**1.1 S3 bucket**](#11-s3-bucket)
   - [**1.2 S3 Object**](#12-s3-object)
   - [**1.3 Metadata**](#13-metadata)
@@ -10,13 +14,31 @@
   - [**2.2 Upload files to S3**](#22-upload-files-to-s3)
   - [**3. Setting Permissions in S3**](#3-setting-permissions-in-s3)
 
-## **1. What is AWS S3?**
+## **1. Store data challenges**
 
-AWS S3 là một file storage service, S3 đảm bảo cho về scalability, data availability, security and performance. Mình sẽ tương tác với S3 thông qua internet. S3 có thể sử dụng cho những mục đích như:
+Khi mà lưu trữ data thì có 2 vấn đề sau:
 
-- Backups data.
-- Storage
-- Hosting static websites.
+1. Số lượng của data thì luôn tăng.
+2. phải đảm bảo đc rằng dữ liệu không bị mất mát.
+
+Sẽ tìm hiểu AWS S3 là `object storage` giúp mình lưu được số lượng dữ liệu `near-unlimited` thông qua internet, và data của bạn sẽ luôn được lưu ở nhiều hơn một máy chủ điều này sẽ giảm thiểu khả năng bị mất mát dữ liệu.
+
+## **2. What is an object store**
+
+Data được quản lý bởi file và các folders, mỗi file đại điện cho data. Một `objects store` là data được lưu giống như objects. Mỗi object thì chứa các thông tin về data vd: globally unique identifier (GUID), metadata (mô tả về data), và data (bản thân data, vd: image, json, csv,...).
+
+![](images/8.png)
+
+## **3. Amazon S3**
+
+AWS S3 cung cấp dịch vụ lưu trữ data (objects storage). Có thể lưu và retrieve data thông qua API. S3 đảm bảo bạn có thể lưu unlimited data, và data lưu trên S3 là `availability` and `durability`.
+
+- `Availability`: Tỉ lệ mà có thể access được vào data và đã lưu trước đó ở S3. AWS S3 đảm bảo 99.99% uptime. 1 ngày S3 có thể down khoảng 1m26s, 43m49s 1 tháng, 8h45m56s mỗi năm.
+- `Durability`: Tỉ lệ mà dữ liệu lưu trên S3 bị mất. AWS S3 đảm bảo 99.999999999%, nói chung là dữ liệu lưu trên S3 ít có khả năng bị mất. S3 là service ở scope là `region`, có nghĩa là data sẽ được sao lưu ở các AZ trong `region`.
+
+Dữ liệu ở trên S3 có thể là bất cứ loại data nào, vd: image, video, json, csv,... Một Object lưu trên S3 max là 5T. Có thể tương tác với S3 thông qua internet sử dụng https để upload hoặc download object, tương tác với S3 thông qua `Management Console`, `CLI`, `SDKs`.
+
+![](images/9.png)
 
 ## **1.1 S3 bucket**
 
