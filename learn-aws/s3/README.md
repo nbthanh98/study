@@ -58,3 +58,5 @@ VD: `s3://logs/pythonlogs/12-2-12.txt`
 Metadata là data được lưu trong object, và lưu thêm các thông tin liên quan đến data.
 
 ## **4. Hands On**
+
+- [Create bucket upload to S3](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/1-create-bucket-manager-console#readme)
