@@ -60,3 +60,4 @@ Metadata là data được lưu trong object, và lưu thêm các thông tin li�
 ## **4. Hands On**
 
 - [Create bucket upload to S3](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/1-create-bucket-manager-console#readme)
+- [S3 with cli](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/2-upload-download-file-with-cli)
