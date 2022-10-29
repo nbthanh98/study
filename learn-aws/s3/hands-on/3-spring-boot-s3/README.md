@@ -1,5 +1,7 @@
 # Upload and download file with Sping boot and AWS S3
 
+**Link source code**: [spring-boot-s3](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/3-spring-boot-s3/source-code/aws-s3).
+
 Phần này test upload và download file với S3 và Spring boot. Cần chuẩn bị:
 
 - Spring project (maven/gradle) -> tạo [spring project](https://start.spring.io/).
