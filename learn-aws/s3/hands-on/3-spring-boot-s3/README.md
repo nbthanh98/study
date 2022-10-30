@@ -50,8 +50,8 @@ Phần này test upload và download file với S3 và Spring boot. Cần chuẩ
     public AWSCredentials credentials() {
         // chỗ key này nên để thành biến môi trường
         return new BasicAWSCredentials(
-                "AKIA2KJPHCMT3JLW4EGF",
-                "SPlvaksdi25MTgP7+RwCQ5d7RwCZig0ykgHo14He"
+                "<ACCESS_KEY>",
+                "<PRIVATE_ACCESS_KEY>"
         );
     }
 

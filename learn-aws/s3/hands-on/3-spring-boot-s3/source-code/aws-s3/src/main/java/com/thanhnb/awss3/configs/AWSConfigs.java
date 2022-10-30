@@ -14,9 +14,8 @@ public class AWSConfigs {
 
     public AWSCredentials credentials() {
         return new BasicAWSCredentials(
-                "AKIA2KJPHCMT3JLW4EGF",
-                "SPlvaksdi25MTgP7+RwCQ5d7RwCZig0ykgHo14He"
-        );
+                "<ACCESS_KEY>",
+                "<PRIVATE_ACCESS_KEY>");
     }
 
     @Bean
