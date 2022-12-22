@@ -54,4 +54,6 @@ When access to `www.netflix.com` computer need get IP address through domain nam
 - **<u>Step 8</u>**: `DNS Resolve` sẽ thực hiện query đến `netflix.com DNS NS` để lấy thông tin về `www.netflix.com`. Bởi vì `netflix.com DNS NS` là có quyền với cái domain này bởi vì họ host the zone và `Zone file` cho cái domain này
 - **<u>Step 9</u>**: `netflix.com DNS NS` sẽ trả về cho `DNS Resolve` cái `DNS record` mapping giữa `www.netflix.com` => IP address. 
 - **<u>Step 10</u>**: Lúc này thì `DNS Resolve` sẽ cached lại kết quả để tăng tốc độ truy vấn cho những lần truy cập sau.
-- **<u>Step 11</u>**: 
+- **<u>Step 11</u>**: `DNS Resolve` sẽ trả lại kết quả cho máy tính của chúng ta.
+
+![](./images/2-dns-work.png)
