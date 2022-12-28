@@ -6,9 +6,9 @@
   - [**1. Store data challenges**](#1-store-data-challenges)
   - [**2. What is an object store**](#2-what-is-an-object-store)
   - [**3. Amazon S3**](#3-amazon-s3)
-  - [**3.1 S3 bucket**](#31-s3-bucket)
-  - [**3.2 S3 Object**](#32-s3-object)
-  - [**3.3 Metadata**](#33-metadata)
+    - [**3.1 S3 bucket**](#31-s3-bucket)
+    - [**3.2 S3 Object**](#32-s3-object)
+    - [**3.3 Metadata**](#33-metadata)
   - [**4. Hands On**](#4-hands-on)
 
 ## **1. Store data challenges**
@@ -37,13 +37,13 @@ Dữ liệu ở trên S3 có thể là bất cứ loại data nào, vd: image, v
 
 ![](images/9.png)
 
-## **3.1 S3 bucket**
+### **3.1 S3 bucket**
 
 ![](images/10.png)
 
 S3 sử dụng `bucket` để nhóm các objects, `bucket` giống như một container chứa các objects, có thể tạo nhiều `bucket`, mỗi `bucket` sẽ có tên duy nhất (globally unique name), không thể có 2 bucket name giống nhau trên mọi region. Trong bucket có thể tạo một hoặc nhiều các folder để nhóm các data.
 
-## **3.2 S3 Object**
+### **3.2 S3 Object**
 
 AWS S3 là một key-value store, key sẽ đại diện cho virtual folder structure đã tạo trên cloud. `s3://bucket-name/directories/filename`.
 VD: `s3://logs/pythonlogs/12-2-12.txt`
@@ -53,7 +53,7 @@ VD: `s3://logs/pythonlogs/12-2-12.txt`
 - `12-2-12.txt`: là tên file
   S3 có thể lưu được nhiều loại objects, dung lượng lên đến 5T và có thể multiple upload.
 
-## **3.3 Metadata**
+### **3.3 Metadata**
 
 Metadata là data được lưu trong object, và lưu thêm các thông tin liên quan đến data.
 
