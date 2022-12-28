@@ -10,6 +10,7 @@
     - [**3.2 S3 Object**](#32-s3-object)
     - [**3.3 Metadata**](#33-metadata)
   - [**4. Hands On**](#4-hands-on)
+  - [Resources](#resources)
 
 ## **1. Store data challenges**
 
@@ -63,5 +64,7 @@ Metadata là data được lưu trong object, và lưu thêm các thông tin li�
 - [S3 with cli](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/2-upload-download-file-with-cli)
 - [Upload and download file spring boot and S3](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/3-spring-boot-s3)
 
+## Resources
 https://zacks.one/aws-s3-lab/
+
 https://medium.com/@venkatesh111/aws-s3-security-iam-policies-bucket-polices-acl-53aa73f7954a
