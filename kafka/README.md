@@ -1,6 +1,6 @@
-# Kafka
+# Study Kafka
 
-- [Kafka](#kafka)
+- [Study Kafka](#study-kafka)
   - [Introduction](#introduction)
   - [Kafka with Docker](#kafka-with-docker)
   - [Producing and consuming a message](#producing-and-consuming-a-message)
