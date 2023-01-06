@@ -21,14 +21,13 @@ Là một service giúp quản lý các quyền truy cập đến các resource 
 
 ![](./images/iam1.png)
 
-- `IAM user`: Là đại điện cho "người nào đó" hoặc application để truy cập tài khoản, tài nguyên. Có 2 cách để xác thực IAM User đó là:
+- `IAM user`: Là đại điện cho "người nào đó" hoặc application để truy cập tài khoản, tài nguyên. Mặc định khi tạo `IAM User` thì `IAM User` mới tạo sẽ không có quyền gì. Có 2 cách để xác thực `IAM User` đó là:
 
   - **Access key/secret**: Sử dụng khi sử dụng CLI/SDK hoặc cấu hình vào các application.
   - **User/password**: Sử dụng khi dùng AWS console.
 
-- `IAM group`: Là tạo ra một nhóm các IAM User có cùng quyền.
-- `IAM role`: .
-- `IAM identity policy`: is used to define the permissions for a user, group, or role.
+- `IAM Group`: Là tạo ra một nhóm các IAM User có cùng quyền.
+- `IAM Role`: Khá tưng tự như một user, trong đó user sẽ gán với permission policies để xác định user **có thể** và **không thể** làm gì trên AWS.
 
 ## **2. Users for authentication, and groups to organize users (hands-on 4.1)**
 
