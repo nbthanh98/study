@@ -16,9 +16,18 @@ Là một service giúp quản lý các quyền truy cập đến các resource 
 
 - `Identities`: Khi có một hành động nào đó tương tác với các resource trên AWS thì cần biết cái request đó là của ai (Authencation) có thể là của user, hoặc là của các entity khác. VD: Ông A đang muốn tạo một cái S3 Bucket.
 - `Permissions`: Khi mà biết ông A là người request tạo S3 Bucket rồi thì cần phải biết cái request này của ông A có quyền thực hiện action đó hay không?. Thì các action mà ông A có thể làm sẽ được định nghĩa trong Policy.
-- `IAM user`: is used to authenticate people or workloads running outside of AWS.
-- `IAM group`: is a collection of IAM users with the same permissions.
-- `IAM role`: is used to authenticate AWS resources.
+
+`IAM Service `cho phép tạo 3 loại `IAM` khác nhau:
+
+![](./images/iam1.png)
+
+- `IAM user`: Là đại điện cho "người nào đó" hoặc application để truy cập tài khoản, tài nguyên. Có 2 cách để xác thực IAM User đó là:
+
+  - **Access key/secret**: Sử dụng khi sử dụng CLI/SDK hoặc cấu hình vào các application.
+  - **User/password**: Sử dụng khi dùng AWS console.
+
+- `IAM group`: Là tạo ra một nhóm các IAM User có cùng quyền.
+- `IAM role`: .
 - `IAM identity policy`: is used to define the permissions for a user, group, or role.
 
 ## **2. Users for authentication, and groups to organize users (hands-on 4.1)**
