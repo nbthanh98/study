@@ -9,6 +9,7 @@
   - [**4. IAM Policy and Permissions**](#4-iam-policy-and-permissions)
     - [**4.1 Types of IAM Policies**](#41-types-of-iam-policies)
     - [**4.2 Indentity-based Policies**](#42-indentity-based-policies)
+    - [**4.3 Users**](#43-users)
 
 ## **1. Introduction**
 
@@ -71,3 +72,11 @@ There are two types of identites in AWS (**users** and **roles**). By attaching 
 	]
 }
 ```
+When attach the policy to an identity, a user in this case, there is no "Principal" field in the policy. The above policy defined permisstions to access S3 bucket.
+
+![](images/policy-3.png)
+
+**Note**: Groups are not identities but a way to attach policies to multiple user.
+
+### **4.3 Users**
+
