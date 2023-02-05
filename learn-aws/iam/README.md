@@ -10,6 +10,7 @@
     - [**4.1 Types of IAM Policies**](#41-types-of-iam-policies)
     - [**4.2 Indentity-based Policies**](#42-indentity-based-policies)
     - [**2.3 Resource-based Policies**](#23-resource-based-policies)
+    - [**2.4 Kết hợp giữa Identity-based Policies và Resource-based Policies**](#24-kết-hợp-giữa-identity-based-policies-và-resource-based-policies)
 
 ## **1. Introduction**
 
@@ -82,8 +83,70 @@ There are two types of identites in AWS (**users** and **roles**). By attaching 
 ```
 When attach the policy to an identity, a user in this case, there is no "Principal" field in the policy. The above policy defined permisstions to access S3 bucket.
 
-![](images/policy-3.png)
-
 **Note**: Groups are not identities but a way to attach policies to multiple user.
 
 ### **2.3 Resource-based Policies**
+
+**Resource-based Policies** are attached to a resource. For example, you can attach resource-based policies to Amazon S3 buckets, Amazon SQS queues, VPC endpoints,.. Với resource-based policies, bạn có thể mô tả "who" có quyền truy cập đến resource và những hành động họ có thể thực hiện trên resource.
+
+```Json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+      
+			"Effect": "Allow", /* "Allow" hoặc "Deny"*/
+			"Principal": "*", /* Mô tả các Identity (users, groups, roles)*/
+			"Action": [      /* Các hành động sẽ "Allow" hoặc "Deny" */
+				"s3:GetObject"
+			],
+			"Resource": [
+				"<arn>/*"
+			]
+		}
+	]
+}
+```
+
+### **2.4 Kết hợp giữa Identity-based Policies và Resource-based Policies**
+
+**Identity-based Policies** thì gắn các policies ở phía các Indentity (users, groups, roles), còn **Resource-based Policies** thì gắn các policies ở phía các resouseces (S3, SNS, EC2,..). Khi kết hợp cả hai loại policies này thì sẽ giúp cho việc cấp quyền cho một user thao tác trên AWS resources được chặt chẽ hơn.
+
+VD: Ông user1 trong group Developers và group Developers này có Identity-based Policies là S3FullAccess. Nhưng vì ông user1 đang trong thời gian học việc tôi chỉ muốn cho ông user1 này quyền readOnly trên S3 thôi thì sẽ làm thế nào?
+
+Tạo thêm 1 group nữa tên là DevelopersProbation và gắn cho quyền ReadOnly trên S3 rồi add ông user1 vào?. Cách này thì cũng được nhưng phải tạo hơi nhiều group. Có một cách khác là sử dụng Resource-based Policies để giới hạn quyền của ông user1 trên chính resource ở đây là S3.
+
+- Identity-based Policies gắn với user1: `AmazonS3FullAccess`
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "s3:*",
+                "s3-object-lambda:*"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+```
+- Resource-based Policies gắn trên S3 bucket.
+```json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Principal": {
+				"AWS": "arn:aws:iam::<id>:user/user1"
+			},
+			"Action": ["s3:ListBucket", "s3:GetObject"],
+			"Resource": "arn:aws:s3:::<bucket>/text.txt"
+		}
+	]
+}
+```
+
+Quyền mà ông user1 này có sẽ là phép giao giữa `Identity-based Policies` và `Resource-based Policies`.
