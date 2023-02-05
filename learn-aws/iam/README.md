@@ -11,6 +11,7 @@
     - [**4.2 Indentity-based Policies**](#42-indentity-based-policies)
     - [**2.3 Resource-based Policies**](#23-resource-based-policies)
     - [**2.4 Kết hợp giữa Identity-based Policies và Resource-based Policies**](#24-kết-hợp-giữa-identity-based-policies-và-resource-based-policies)
+  - [**5. IAM labs**](#5-iam-labs)
 
 ## **1. Introduction**
 
@@ -150,3 +151,7 @@ Tạo thêm 1 group nữa tên là DevelopersProbation và gắn cho quyền Rea
 ```
 
 Quyền mà ông user1 này có sẽ là phép giao giữa `Identity-based Policies` và `Resource-based Policies`.
+
+## **5. IAM labs**
+
+1. [Tạo iam user và iam user group.](https://github.com/nbthanh98/study/blob/master/learn-aws/iam/iam-labs.md)
