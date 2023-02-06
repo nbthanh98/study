@@ -33,7 +33,7 @@ Trong AWS có một loại IAM User nhưng sẽ phụ thuộc vào cách sử d�
 
 IAM User can placed in IAM Group. IAM Group make it easier to organies a large number IAM Users. IAM Group can attach permisstion to group level instead attach permissions to each IAM User.
 
-Each IAM User can placed in multiple IAM Groups. Example a user can placed in DevOps Group and Developer Group.
+Each IAM User can placed in multiple IAM Groups. Example a user can placed in DevOps Group and Developer Group. 
 
 ## **4. IAM Policy and Permissions**
 
@@ -50,14 +50,14 @@ By default, IAM identity (User, user group, role) start with no permisstions. IA
 
 ### **4.1 Types of IAM Policies**
 
-- **Identity-based policies**: Identity-based policies are policies attach to AWS identities like IAM User, IAM Group, IAM Roles. For example, you can attach IAM Policies to IAM User called "BOB" to list item in S3 bucket.
+- **Identity-based policies**: Identity-based policies are policies attach to AWS identities like IAM User, IAM Group, IAM Roles. For example, you can attach IAM Policies to IAM User called "BOB" to list item in S3 bucket. 
 
   - **Managed Policies**: Là những policies được gắn với IAM identity như: IAM User, IAM Group, IAM Role, có thể tái sử dụng.
-
+  
     - **AWS Managed**: These policies are create, update, managed by AWS. By default, there are many pre-defined AWS managed policies available in your AWS account.
 
     - **Customer Managed**: These policies are create, update, manage by Customer. Customer can create their own policies for customized environment. By default, in your aws account dont have any customer managed policies.
-
+  
   - **Inline Policies**: Là những policies nhúng trực tiếp vào một identity nào đó (user, group, role). Quan hệ 1-1 với identity, những policies này thì không tái sử dụng được và sẽ bị xóa đi nếu các identity bị xóa.
 
 - **Resource-based policies**: Resource-based policies là những policies sẽ được gắn với các resource (S3, EC2,...) trên AWS.
