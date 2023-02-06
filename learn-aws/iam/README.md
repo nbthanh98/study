@@ -3,15 +3,15 @@
 ![](./images/1.png)
 
 - [AWS Identity and Access Management (IAM)](#aws-identity-and-access-management-iam)
-  - [**1. Introduction**](#1-introduction)
-  - [**2. What are IAM User?**](#2-what-are-iam-user)
-  - [**3. What is IAM Group?**](#3-what-is-iam-group)
-  - [**4. IAM Policy and Permissions**](#4-iam-policy-and-permissions)
-    - [**4.1 Types of IAM Policies**](#41-types-of-iam-policies)
-    - [**4.2 Indentity-based Policies**](#42-indentity-based-policies)
-    - [**2.3 Resource-based Policies**](#23-resource-based-policies)
-    - [**2.4 Kết hợp giữa Identity-based Policies và Resource-based Policies**](#24-kết-hợp-giữa-identity-based-policies-và-resource-based-policies)
-  - [**5. IAM labs**](#5-iam-labs)
+	- [**1. Introduction**](#1-introduction)
+	- [**2. What are IAM User?**](#2-what-are-iam-user)
+	- [**3. What is IAM Group?**](#3-what-is-iam-group)
+	- [**4. IAM Policy and Permissions**](#4-iam-policy-and-permissions)
+		- [**4.1 Types of IAM Policies**](#41-types-of-iam-policies)
+		- [**4.2 Indentity-based Policies**](#42-indentity-based-policies)
+		- [**2.3 Resource-based Policies**](#23-resource-based-policies)
+		- [**2.4 Kết hợp giữa Identity-based Policies và Resource-based Policies**](#24-kết-hợp-giữa-identity-based-policies-và-resource-based-policies)
+	- [**5. IAM labs**](#5-iam-labs)
 
 ## **1. Introduction**
 
@@ -155,3 +155,4 @@ Quyền mà ông user1 này có sẽ là phép giao giữa `Identity-based Polic
 ## **5. IAM labs**
 
 1. [Tạo iam user và iam user group.](https://github.com/nbthanh98/study/blob/master/learn-aws/iam/iam-labs.md)
+2. [Tạo iam policies.](https://github.com/nbthanh98/study/blob/master/learn-aws/iam/iam-policies.md)
