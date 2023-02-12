@@ -232,6 +232,8 @@ Step 4: Bấm switch role.
 
 Như trên thì đã switch role thành công.
 
+**NOTE**: Khi thực hiện assume một cái role nào đó (vd trên là role: `IAMRoleLabS3FullAccess`) thì sẽ chỉ có các permisstions mà role này được attach, các permisstions mà được attach cho IAM user sẽ không còn có hiệu lực nữa.
+
 ## **6. IAM labs**
 
 1. [Tạo iam user và iam user group.](https://github.com/nbthanh98/study/blob/master/learn-aws/iam/iam-labs.md)
