@@ -11,7 +11,11 @@
 		- [**4.2 Indentity-based Policies**](#42-indentity-based-policies)
 		- [**2.3 Resource-based Policies**](#23-resource-based-policies)
 		- [**2.4 Kết hợp giữa Identity-based Policies và Resource-based Policies**](#24-kết-hợp-giữa-identity-based-policies-và-resource-based-policies)
-	- [**5. IAM labs**](#5-iam-labs)
+	- [**5. IAM Role**](#5-iam-role)
+		- [**5.1 IAM Role là gì?**](#51-iam-role-là-gì)
+		- [**5.2 Structure of an IAM Role**](#52-structure-of-an-iam-role)
+		- [**5.3 Create an IAM Role**](#53-create-an-iam-role)
+	- [**6. IAM labs**](#6-iam-labs)
 
 ## **1. Introduction**
 
@@ -152,7 +156,83 @@ Tạo thêm 1 group nữa tên là DevelopersProbation và gắn cho quyền Rea
 
 Quyền mà ông user1 này có sẽ là phép giao giữa `Identity-based Policies` và `Resource-based Policies`.
 
-## **5. IAM labs**
+## **5. IAM Role**
+
+### **5.1 IAM Role là gì?**
+
+**Roles are not Permissions**. A role is also an authentication method like IAM Users and groups. As a user, a role is also a operator (could be a human, could be a machine).
+
+Role do not have password or access keys. Instead, roles provide temporary security credentials to whoever asumes the role. Any of these entities can assume a role to use its permissions:
+
+- AWS user from the same account.
+- AWS user from a different account.
+- AWS service.
+- Federated identity.
+
+### **5.2 Structure of an IAM Role**
+
+![](images/role-1.png)
+
+**Trust policy**
+
+These are policies that define and control which principals(IAM users, AWS services) can assume the role based on the specified conditions.
+
+**Permission policy**
+
+These are policies that the principals who assume the role are allowed to do once the assume it. 
+
+### **5.3 Create an IAM Role**
+
+Step 1: Create custom trust policies:
+  
+```json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "Statement1",
+			"Effect": "Allow",
+			"Principal": {
+			    "AWS": "<IAM_USER_ARN>"
+			},
+			"Action": "sts:AssumeRole"
+		}
+	]
+}
+```
+
+Step 2: Create permission policies:
+
+```json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+	    {
+	        "Effect": "Allow",
+	        "Action": [
+	            "s3:*",
+	            "s3-object-lambda:*"
+	        ],
+	        "Resource": "*"
+	    }
+	]
+}
+```
+
+Step 3: Create "Switch role" button for switch role:
+
+![](images/role-2.png)
+
+- Account*: Account ID of IAM User (IAM user này cần phải được điền trong phần trust-policies).
+- Role*: Cần ghi chính xác role muốn switch sang.
+
+Step 4: Bấm switch role.
+
+![](images/role-3.png)
+
+Như trên thì đã switch role thành công.
+
+## **6. IAM labs**
 
 1. [Tạo iam user và iam user group.](https://github.com/nbthanh98/study/blob/master/learn-aws/iam/iam-labs.md)
 2. [Tạo iam policies.](https://github.com/nbthanh98/study/blob/master/learn-aws/iam/iam-policies.md)
