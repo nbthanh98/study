@@ -16,6 +16,7 @@
 		- [**5.2 Structure of an IAM Role**](#52-structure-of-an-iam-role)
 		- [**5.3 Create an IAM Role**](#53-create-an-iam-role)
 		- [**5.4 Types of IAM Roles**](#54-types-of-iam-roles)
+		- [**5.5 For How Long Can an Entity Assume a Role?**](#55-for-how-long-can-an-entity-assume-a-role)
 	- [**6. IAM labs**](#6-iam-labs)
 
 ## **1. Introduction**
@@ -332,6 +333,16 @@ Unable to locate credentials. You can configure credentials by running "aws conf
 [ec2-user@ip-10-0-10-26 ~]$ 
 
 ```
+
+**2.1. Service-linked roles**
+
+// write something here.
+
+### **5.5 For How Long Can an Entity Assume a Role?**
+
+**Session duration**: là thời gian mà temporary credentials valid. VD nếu tạo một IAM Role và cài đặt thuộc tính `Session duration` là 12h thì sau 12h cái temporary credenticals sẽ bị expire. Default sẽ là 1h.
+
+
 
 ## **6. IAM labs**
 
