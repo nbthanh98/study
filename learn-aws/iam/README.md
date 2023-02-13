@@ -15,6 +15,7 @@
 		- [**5.1 IAM Role là gì?**](#51-iam-role-là-gì)
 		- [**5.2 Structure of an IAM Role**](#52-structure-of-an-iam-role)
 		- [**5.3 Create an IAM Role**](#53-create-an-iam-role)
+		- [**5.4 Types of IAM Roles**](#54-types-of-iam-roles)
 	- [**6. IAM labs**](#6-iam-labs)
 
 ## **1. Introduction**
@@ -183,7 +184,7 @@ These are policies that the principals who assume the role are allowed to do onc
 
 ### **5.3 Create an IAM Role**
 
-Step 1: Create custom trust policies:
+*Step 1: Create custom trust policies:*
   
 ```json
 {
@@ -201,7 +202,7 @@ Step 1: Create custom trust policies:
 }
 ```
 
-Step 2: Create permission policies:
+*Step 2: Create permission policies:*
 
 ```json
 {
@@ -219,20 +220,118 @@ Step 2: Create permission policies:
 }
 ```
 
-Step 3: Create "Switch role" button for switch role:
+*Step 3: Create "Switch role" button for switch role:*
 
 ![](images/role-2.png)
 
 - Account*: Account ID of IAM User (IAM user này cần phải được điền trong phần trust-policies).
 - Role*: Cần ghi chính xác role muốn switch sang.
 
-Step 4: Bấm switch role.
+*Step 4: Bấm switch role.*
 
 ![](images/role-3.png)
 
 Như trên thì đã switch role thành công.
 
 **NOTE**: Khi thực hiện assume một cái role nào đó (vd trên là role: `IAMRoleLabS3FullAccess`) thì sẽ chỉ có các permisstions mà role này được attach, các permisstions mà được attach cho IAM user sẽ không còn có hiệu lực nữa.
+
+### **5.4 Types of IAM Roles**
+
+AWS IAM roles can be classified into 5 major categories based on their *trust policies*:
+
+- Service Role
+- Service-Linked Role
+- Web Identity role
+- SAML 2.0 federation role
+- Custom IAM role
+
+**1.1. Service role**
+
+By default even AWS services do not have access to the resources in the AWS account. `Service roles` enable AWS servies to access resources based on their requirements. `Service roles` allow AWS services to perform actions on your behalf by injeriting the permissions assigned to the service role.
+
+**1.2. Where are service roles used?**
+
+Most AWS services rely on service roles to to function properly. Example EC2 interact to S3 bucket such as get list bucket, putObject,..
+
+**1.3 Create IAM roles**
+
+Create IAM role EC2 interact S3.
+
+*Step 1: Launch EC2 instance, this instance dont have any IAM role attached.*
+
+![](./images/role-4.png)
+
+*Step 2: Access IAM Service => create IAM Roles: `EC2S3FullAccess`*
+
+- Trust policies:
+
+```json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+	    {
+	        "Effect": "Allow",
+	        "Principal": {
+	            "Service": "ec2.amazonaws.com" /*Service EC2 được assume*/
+	        },
+	        "Action": "sts:AssumeRole"
+	    }
+	]
+}
+```
+
+- Permisstions policies:
+  
+```json
+{
+	"Version": "2012-10-17",
+	"Statement": [
+	    {
+	        "Effect": "Allow",
+	        "Action": [
+	            "s3:*",
+	            "s3-object-lambda:*"
+	        ],
+	        "Resource": "*"
+	    }
+	]
+}
+```
+
+Ở phần trên là tạo một IAM Role: `EC2S3FullAccess` với trust policies là service EC2 được assume và gán policies S3 full access.
+
+```bash 
+# Trước khi gắn IAM Role vào EC2 thì lấy danh sách s3 bucket sẽ không được.
+[ec2-user@ip-10-0-10-26 ~]$ aws s3 ls 
+Unable to locate credentials. You can configure credentials by running "aws configure".
+[ec2-user@ip-10-0-10-26 ~]$ 
+
+# Có thể config aws profile sử dụng accessKey trên EC2 này thì cũng có thể access vào S3. Nhưng làm như vậy thì accessKey có thể được nhìn thấy ở foler .aws => có thể sẽ không an toàn.
+```
+
+*Step 3: Attach IAM Role: `EC2S3FullAccess` to EC2 instance*
+
+![](images/role-5.png)
+
+Sau khi attach IAM role thì sẽ thấy EC2 instance có IAM Role: `EC2S3FullAccess` rồi.
+
+![](images/role-6.png)
+
+*Step 4: SSH vao EC2 instance để verify*
+
+```bash
+https://aws.amazon.com/amazon-linux-2/
+16 package(s) needed for security, out of 16 available
+Run "sudo yum update" to apply all updates.
+[ec2-user@ip-10-0-10-26 ~]$ aws s3 ls 
+Unable to locate credentials. You can configure credentials by running "aws configure".
+
+# Đã access được vào S3 mà không cần config aws profile.
+[ec2-user@ip-10-0-10-26 ~]$ aws s3 ls 
+2023-01-31 07:59:10 thanhnb-test-policies
+[ec2-user@ip-10-0-10-26 ~]$ 
+
+```
 
 ## **6. IAM labs**
 
