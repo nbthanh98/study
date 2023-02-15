@@ -30,15 +30,18 @@ public class S3AssumeRoleControllers {
     private static S3Client buildS3Client(String accessKey, String secretKey, Region region) {
         StaticCredentialsProvider staticCredentialsProvider = StaticCredentialsProvider
                 .create(AwsBasicCredentials.create(accessKey, secretKey));
-        return S3Client.builder().
-                credentialsProvider(staticCredentialsProvider)
-                .region(region).build();
+        
+        return S3Client.builder()
+            .credentialsProvider(staticCredentialsProvider)
+            .region(region)
+            .build();
     }
 
     private static S3Client buildS3Client(Region region) {
-        return S3Client.builder().
-                credentialsProvider(InstanceProfileCredentialsProvider.create())
-                .region(region).build();
+        return S3Client.builder()
+            .credentialsProvider(InstanceProfileCredentialsProvider.create())
+            .region(region)
+            .build();
     }
 
     public void listObjects(String bucketName, S3Client s3Client) {
