@@ -3,68 +3,68 @@
 ![](images/amazon-s3.png)
 
 - [AWS S3 (Simple storage service)](#aws-s3-simple-storage-service)
-  - [**1. Store data challenges**](#1-store-data-challenges)
-  - [**2. What is an object store**](#2-what-is-an-object-store)
-  - [**3. Amazon S3**](#3-amazon-s3)
-    - [**3.1 S3 bucket**](#31-s3-bucket)
-    - [**3.2 S3 Object**](#32-s3-object)
-    - [**3.3 Metadata**](#33-metadata)
-  - [**4. Hands On**](#4-hands-on)
-  - [Resources](#resources)
+  - [**1. What is Amazon S3?**](#1-what-is-amazon-s3)
+  - [**2. Những ưu điểm của S3**](#2-những-ưu-điểm-của-s3)
+    - [**Horizontally Scalable**](#horizontally-scalable)
+    - [**Consistently Available**](#consistently-available)
+    - [**Durability**](#durability)
+    - [**Integrations with Other AWS Services**](#integrations-with-other-aws-services)
+  - [**3. S3 Core Concepts**](#3-s3-core-concepts)
+    - [**Buckets**](#buckets)
+    - [**Objects**](#objects)
+  - [**4. Labs**](#4-labs)
+  - [**5. Resources**](#5-resources)
 
-## **1. Store data challenges**
+## **1. What is Amazon S3?**
 
-Khi mà lưu trữ data thì có 2 vấn đề sau:
+S3 stands for **S**imple **S**torage **S**ervice and is **object storage** service built by AWS. I like to think of S3 as something simalar to Dropbox or Google Drive in the sense that that you can store any type of objects to S3. Example you can store video, file,...
 
-1. Số lượng của data thì luôn tăng.
-2. phải đảm bảo đc rằng dữ liệu không bị mất mát.
+You can store big files, small files, media content, source code, email, json and basically anything that you can think of. Keep inx mind though for a single object, there is a maximum size limit of **5 TB**.
 
-Sẽ tìm hiểu AWS S3 là `object storage` giúp mình lưu được số lượng dữ liệu `near-unlimited` thông qua internet, và data của bạn sẽ luôn được lưu ở nhiều hơn một máy chủ điều này sẽ giảm thiểu khả năng bị mất mát dữ liệu.
+## **2. Những ưu điểm của S3**
 
-## **2. What is an object store**
+### **Horizontally Scalable**
 
-Data được quản lý bởi file và các folders, mỗi file đại điện cho data. Một `objects store` là data được lưu giống như objects. Mỗi object thì chứa các thông tin về data vd: globally unique identifier (GUID), metadata (mô tả về data), và data (bản thân data, vd: image, json, csv,...).
+**Performance** is another reason many users flock to S3 as an object storage solution. S3 is an extremely scalable solution. S3 no limit to the amount of content you can upload.
 
-![](images/8.png)
+The nice thing abloud S3 is that it can support applications that need to PUT or GET objects at very hight throughputs, and still experiendce very very low latancies. For example, can build application that needed to read s3 object out of a bucket at at over 50 read calls **PER SECOND**. Volum size from around 50KB to 100KB, but latencies were always low (often lower than 100ms). 
 
-## **3. Amazon S3**
+### **Consistently Available**
 
-AWS S3 cung cấp dịch vụ lưu trữ data (objects storage). Có thể lưu và retrieve data thông qua API. S3 đảm bảo bạn có thể lưu unlimited data, và data lưu trên S3 là `availability` and `durability`.
+// add some contents here.
 
-- `Availability`: Tỉ lệ mà có thể access được vào data và đã lưu trước đó ở S3. AWS S3 đảm bảo 99.99% uptime. 1 ngày S3 có thể down khoảng 1m26s, 43m49s 1 tháng, 8h45m56s mỗi năm.
-- `Durability`: Tỉ lệ mà dữ liệu lưu trên S3 bị mất. AWS S3 đảm bảo 99.999999999%, nói chung là dữ liệu lưu trên S3 ít có khả năng bị mất. S3 là service ở scope là `region`, có nghĩa là data sẽ được sao lưu ở các AZ trong `region`.
+### **Durability**
 
-Dữ liệu ở trên S3 có thể là bất cứ loại data nào, vd: image, video, json, csv,... Một Object lưu trên S3 max là 5T. Có thể tương tác với S3 thông qua internet sử dụng https để upload hoặc download object, tương tác với S3 thông qua `Management Console`, `CLI`, `SDKs`.
+// add some contents here.
 
-![](images/9.png)
+### **Integrations with Other AWS Services**
 
-### **3.1 S3 bucket**
+Có thể sử dụng S3 kết hợp với các service khác trên AWS. VD có thể sử dụng S3 **event** để tương tác với lambda function. Có thể trigger một lambda function mỗi khi một S3 object được upload.
 
-![](images/10.png)
+Cũng có thể tự host một websites (HTML, CSS, Javascript) với Route53. Cũng có thể thêm caching bằng cách sử dụng CloudFront.
 
-S3 sử dụng `bucket` để nhóm các objects, `bucket` giống như một container chứa các objects, có thể tạo nhiều `bucket`, mỗi `bucket` sẽ có tên duy nhất (globally unique name), không thể có 2 bucket name giống nhau trên mọi region. Trong bucket có thể tạo một hoặc nhiều các folder để nhóm các data.
+## **3. S3 Core Concepts**
 
-### **3.2 S3 Object**
+### **Buckets**
 
-AWS S3 là một key-value store, key sẽ đại diện cho virtual folder structure đã tạo trên cloud. `s3://bucket-name/directories/filename`.
-VD: `s3://logs/pythonlogs/12-2-12.txt`
+- Hãy nghỉ một bucket giống như foler trong máy tính, bản thân bucket này là một folder, bên trong bucket này có thể có các items (thường gọi là các **S3 objects**) hoặc có thể là các subfolers.
 
-- `logs`: là tên bucket.
-- `pythonlogs`: là thư mục được tạo bởi S3.
-- `12-2-12.txt`: là tên file
-  S3 có thể lưu được nhiều loại objects, dung lượng lên đến 5T và có thể multiple upload.
+- Khi tạo một bucket cần đặt tên cho bucket, cái tên của bucket sẽ là duy nhất trên toàn AWS. Bạn không thể tạo hai bucket tên là `test` hoặc `production` mặc dù hai bucket trên được tạo bởi ai đó và trên một tài khoản khác.
 
-### **3.3 Metadata**
+### **Objects**
 
-Metadata là data được lưu trong object, và lưu thêm các thông tin liên quan đến data.
+- Objects là content mà lưu trên S3 bucket. Các object này có thể là files, media, zipfile, json,... Một S3 object có size limit là **5 TB**. Object khi thực hiện upload lên S3 bucket không được vượt qua size limit trên.
 
-## **4. Hands On**
+- Những objects có dung lượng lớn khi thực hiện upload lên S3 thì có thể sẽ gặp một số vấn đề mạng,... vì thực hiện upload objects thông qua internet. Những objects có dung lượng lớn thì có thể chia thành những file nhỏ và sử dụng tính năng multiple upload.
+
+## **4. Labs**
 
 - [Create bucket upload to S3](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/1-create-bucket-manager-console#readme)
 - [S3 with cli](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/2-upload-download-file-with-cli)
 - [Upload and download file spring boot and S3](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/3-spring-boot-s3)
 
-## Resources
-https://zacks.one/aws-s3-lab/
+## **5. Resources**
 
-https://medium.com/@venkatesh111/aws-s3-security-iam-policies-bucket-polices-acl-53aa73f7954a
+- https://zacks.one/aws-s3-lab/
+
+- https://medium.com/@venkatesh111/aws-s3-security-iam-policies-bucket-polices-acl-53aa73f7954a
