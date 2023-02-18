@@ -12,6 +12,7 @@
   - [**3. S3 Core Concepts**](#3-s3-core-concepts)
     - [**Buckets**](#buckets)
     - [**Objects**](#objects)
+    - [**S3 Storage Classes**](#s3-storage-classes)
   - [**4. Labs**](#4-labs)
   - [**5. Resources**](#5-resources)
 
@@ -47,15 +48,64 @@ Cũng có thể tự host một websites (HTML, CSS, Javascript) với Route53. 
 
 ### **Buckets**
 
-- Hãy nghỉ một bucket giống như foler trong máy tính, bản thân bucket này là một folder, bên trong bucket này có thể có các items (thường gọi là các **S3 objects**) hoặc có thể là các subfolers.
+Hãy nghỉ một bucket giống như foler trong máy tính, bản thân bucket này là một folder, bên trong bucket này có thể có các items (thường gọi là các **S3 objects**) hoặc có thể là các subfolers.
 
-- Khi tạo một bucket cần đặt tên cho bucket, cái tên của bucket sẽ là duy nhất trên toàn AWS. Bạn không thể tạo hai bucket tên là `test` hoặc `production` mặc dù hai bucket trên được tạo bởi ai đó và trên một tài khoản khác.
+Khi tạo một bucket cần đặt tên cho bucket, cái tên của bucket sẽ là duy nhất trên toàn AWS. Bạn không thể tạo hai bucket tên là `test` hoặc `production` mặc dù hai bucket trên được tạo bởi ai đó và trên một tài khoản khác.
 
 ### **Objects**
 
-- Objects là content mà lưu trên S3 bucket. Các object này có thể là files, media, zipfile, json,... Một S3 object có size limit là **5 TB**. Object khi thực hiện upload lên S3 bucket không được vượt qua size limit trên.
+Objects là content mà lưu trên S3 bucket. Các object này có thể là files, media, zipfile, json,... Một S3 object có size limit là **5 TB**. Object khi thực hiện upload lên S3 bucket không được vượt qua size limit trên.
 
-- Những objects có dung lượng lớn khi thực hiện upload lên S3 thì có thể sẽ gặp một số vấn đề mạng,... vì thực hiện upload objects thông qua internet. Những objects có dung lượng lớn thì có thể chia thành những file nhỏ và sử dụng tính năng multiple upload.
+Những objects có dung lượng lớn khi thực hiện upload lên S3 thì có thể sẽ gặp một số vấn đề mạng,... vì thực hiện upload objects thông qua internet. Những objects có dung lượng lớn thì có thể chia thành những file nhỏ và sử dụng tính năng multiple upload.
+
+Truy cập các object đã upload trên S3. 
+- Cách 1: Sử dụng URL với cấu trúc như sau: `http://s3.amazonaws.com/BUCKET_NAME/OBJECT_NAME`. Đây là HTTP link, có nghĩa là ai có cái link thì đều có thể được được object, nhưng mặc định sẽ không hoạt động, người tạo bucket cần phải "Chủ động" public thì mới có thể truy cập. 
+- Cách 2: Sử dụng một ngôn ngữ lập trình kết hợp với [AWS SDK](https://aws.amazon.com/sdk-for-java/).
+
+  ```java
+  private static S3Client buildS3Client(Region region) {
+    return S3Client.builder()
+        .credentialsProvider(InstanceProfileCredentialsProvider.create())
+        .region(region)
+        .build();
+  }
+
+  public void listObjects(String bucketName, S3Client s3Client) {
+    ListObjectsV2Iterable listObjectsV2Iterable = s3Client.listObjectsV2Paginator(builder -> builder.bucket(bucketName));
+
+    log.info("Objects in {} bucket: ", bucketName);
+
+    listObjectsV2Iterable.contents().stream()
+      .forEach(content -> log.info("{} {} bytes", content.key(), content.size()));
+  }
+  ```
+
+### **S3 Storage Classes**
+
+S3 được sử dụng với nhiều mục đích khác nhau thì cũng có những yêu cầu khác nhau về những thứ như là "latency" và "availability". Storage Classes giải quyết vấn đề trên bằng cách cho phép bạn phân loại các objects bên trong các bucket vào những Storage Classes khác nhau, điều này sẽ dẫn đến sự khác nhau về performance và pricing models.
+
+NOTE: 
+  - Thời giam truy cập vào objects trên S3 (latency).
+  - Về độ sẵn sàng của dữ liệu trên S3 (availability).
+  -  (durability).
+
+A list of storage classes:
+
+- **Standard Tier**: Loại này là default phù hợp với những yêu cầu: Thời gian truy suất object thấp (low latency), tính sẵn sàng cao (high availability), high durability.
+
+- **Intelligent Tier**: Loại này thì sẽ giúp tự động di chuyển data trên S3 vào các loại storage class phù hợp dựa trên tần suất truy cập.
+
+- **Standard IA**: Loại này có thể sẽ phù hợp với những data KHÔNG được truy cập thường xuyên. Khi sử dụng loại storage class này thì thời gian truy cập sẽ lâu hơn.
+
+- **One Zone IA**: Loại này thì cũng giống với `Standard IA`, loại này sẽ chỉ được lưu trên 1 AZ thay vì mặc định nhỏ nhất là 3 AZ nên durability thấp và giá cũng thấp (low cost).
+
+- **Glacier**: Loại này thì sẽ phù hợp với những dữ liệu có tần suất truy cập thấp. Thời gian truy suất dữ liệu cũng lâu khoảng vài phút cho đến vài giờ.
+
+- **Deep Glacier**: Phù hợp cho những loại dữ liệu lưu lâu dài. Thời gian lấy objects lớn trong khoảng 12h. Chi phí thì thấp nhất.
+
+- **Outposts**: On premise S3. 
+
+![](images/s3-storage-class.png)
 
 ## **4. Labs**
 
@@ -65,6 +115,6 @@ Cũng có thể tự host một websites (HTML, CSS, Javascript) với Route53. 
 
 ## **5. Resources**
 
+- https://beabetterdev.com/2021/10/15/aws-s3-core-concepts-the-things-you-need-to-know/
 - https://zacks.one/aws-s3-lab/
-
 - https://medium.com/@venkatesh111/aws-s3-security-iam-policies-bucket-polices-acl-53aa73f7954a
