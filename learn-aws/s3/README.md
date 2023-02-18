@@ -13,6 +13,9 @@
     - [**Buckets**](#buckets)
     - [**Objects**](#objects)
     - [**S3 Storage Classes**](#s3-storage-classes)
+    - [**Data Protection**](#data-protection)
+    - [**Access**](#access)
+    - [**Auditing**](#auditing)
   - [**4. Labs**](#4-labs)
   - [**5. Resources**](#5-resources)
 
@@ -92,20 +95,36 @@ NOTE:
 A list of storage classes:
 
 - **Standard Tier**: Loại này là default phù hợp với những yêu cầu: Thời gian truy suất object thấp (low latency), tính sẵn sàng cao (high availability), high durability.
-
 - **Intelligent Tier**: Loại này thì sẽ giúp tự động di chuyển data trên S3 vào các loại storage class phù hợp dựa trên tần suất truy cập.
-
 - **Standard IA**: Loại này có thể sẽ phù hợp với những data KHÔNG được truy cập thường xuyên. Khi sử dụng loại storage class này thì thời gian truy cập sẽ lâu hơn.
-
 - **One Zone IA**: Loại này thì cũng giống với `Standard IA`, loại này sẽ chỉ được lưu trên 1 AZ thay vì mặc định nhỏ nhất là 3 AZ nên durability thấp và giá cũng thấp (low cost).
-
 - **Glacier**: Loại này thì sẽ phù hợp với những dữ liệu có tần suất truy cập thấp. Thời gian truy suất dữ liệu cũng lâu khoảng vài phút cho đến vài giờ.
-
 - **Deep Glacier**: Phù hợp cho những loại dữ liệu lưu lâu dài. Thời gian lấy objects lớn trong khoảng 12h. Chi phí thì thấp nhất.
-
 - **Outposts**: On premise S3. 
 
 ![](images/s3-storage-class.png)
+
+One of the nice things S3 has introduced in recent years this concept of **S3 Object lifecycle**. This feature allow you to transition objects through different transition tiers over time.
+
+For example, you can use Objects Lifecycle sush that all objects upload to your bucket are classified as standard tier. That bucket store objects with standard tier for 30 days. 
+
+You can defined rule to move objects into IA of infrequent access after 31 days objects uploaded. This will help reduce cost but also guarantee the same levels of performance.
+
+Finally, after 90das, we decide to store our data into Glacier or Deep Glacier so that we can retain it for auditing. That allows us to minimize our cost burden for storage on S3 while also being policy compliant.
+
+### **Data Protection**
+
+AWS offers 99.99999999999% (thats 11 9’s by the way) of durability. This apply for all storage class *exept* One Zone IA with is 99.5%. This mean "losing" your data while stored in S3 are slim to none. S3 also support encryption both in transist and at rest. This mean you can be sure your data being securely transmitted and stored on the cloud.
+
+### **Access**
+
+Use IAM , you can define permistions as resource-base policies and attach to your buckets. That allow you control access to your bucket.
+
+You can make your buckets public or private (default). This allow **global access** to your content provided the user has a url or can guess the name of your bucket/object.
+
+### **Auditing**
+
+
 
 ## **4. Labs**
 
