@@ -131,6 +131,7 @@ You can make your buckets public or private (default). This allow **global acces
 - [Create bucket upload to S3](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/1-create-bucket-manager-console#readme)
 - [S3 with cli](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/2-upload-download-file-with-cli)
 - [Upload and download file spring boot and S3](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/3-spring-boot-s3)
+- [Hosting static website](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/4-static-website-hosting)
 
 ## **5. Resources**
 
