@@ -44,3 +44,6 @@ NOTES S3 VERSIONNING:
 - MFA is required to change bucket versioning state.
 - MFA is required to delete versions.
 
+## Resource
+
+- [SAA C03 Cantrill](https://learn.cantrill.io/p/aws-certified-solutions-architect-associate-saa-c03)
