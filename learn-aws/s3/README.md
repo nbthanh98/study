@@ -16,6 +16,7 @@
     - [**Data Protection**](#data-protection)
     - [**Access**](#access)
     - [**Auditing**](#auditing)
+    - [**S3 Versioning**](#s3-versioning)
   - [**4. Labs**](#4-labs)
   - [**5. Resources**](#5-resources)
 
@@ -124,7 +125,7 @@ You can make your buckets public or private (default). This allow **global acces
 
 ### **Auditing**
 
-
+### **[S3 Versioning](https://github.com/nbthanh98/study/blob/master/learn-aws/s3/s3-object-versioning.md)**
 
 ## **4. Labs**
 
@@ -132,6 +133,7 @@ You can make your buckets public or private (default). This allow **global acces
 - [S3 with cli](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/2-upload-download-file-with-cli)
 - [Upload and download file spring boot and S3](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/3-spring-boot-s3)
 - [Hosting static website](https://github.com/nbthanh98/study/tree/master/learn-aws/s3/hands-on/4-static-website-hosting)
+- [S3 versioning](https://github.com/nbthanh98/study/blob/master/learn-aws/s3/hands-on/5-s3-versioning/README.md)
 
 ## **5. Resources**
 
