@@ -8,6 +8,7 @@
   - [5. S3 Glacier - Flexible Retrieval](#5-s3-glacier---flexible-retrieval)
   - [6. S3 Glacier Deep Archive](#6-s3-glacier-deep-archive)
   - [7. S3 Intelligent-Tiering](#7-s3-intelligent-tiering)
+- [Tài liệu tham khảo](#tài-liệu-tham-khảo)
 
 ### 1. S3 Standard
 
@@ -131,7 +132,7 @@
 
 ![](images/s3-storage-classes-7.png)
 
-<u>Đặc điểm:</u>
+<isn>Đặc điểm:</isn>
 
 - Storage class này sẽ monitor và tự động di chuyển các object vào các storage class khác nhau.
 - Nếu object không được truy suất sau 30 ngày => di chuyển object vào Standard-IA.
@@ -142,3 +143,8 @@
 <u>Chi phí:</u>
 
 - Sẽ phải trả thêm phí monitor và tự động di chuyển object (>128KB) giữa các storage class (0.0025/1000 objects).
+
+## Tài liệu tham khảo
+
+- https://www.apptio.com/blog/essential-guide-aws-s3-pricing/
+- [SAA C03 Cantrill](https://learn.cantrill.io/p/aws-certified-solutions-architect-associate-saa-c03)
