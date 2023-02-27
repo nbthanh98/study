@@ -2,7 +2,7 @@
 
 Step 1: Tạo 2 bucket ở khác region và cùng tài khoản.
 
-![](../../images/s3-rep-2.png)
+![](../../images/s3-rep-20.png)
 
 - Đồng bộ object từ `source-bucket`(US East (N. Virginia) us-east-1) sang `lab.destination-bucket`(US East (Ohio) us-east-2).
 - Hai bucket này cần phải bật bucket versioning. Same Region Replication(SRR) and Cross Region Replication(CRR) yêu cầu cần phải bật versioning vì có thể trong quá trình replication (replication sẽ không ngay lập tức) lại có upload một object mới cùng key nên đặt versioning để không bị lệch objects giữa source bucket và destination bucket.
