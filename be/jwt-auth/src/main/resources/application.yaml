@@ -1,0 +1,17 @@
+server:
+  port : ${SERVER_PORT:8080}
+
+spring:
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/jwt_auth}
+    username: ${MYSQL_USERNAME:jwt_auth}
+    password: ${MYSQL_PASSWORD:jwtAuth}
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true
+
+app:
+  jwtSecret: J81rCZNLDq
+  jwtExpirationInMs: 18000
