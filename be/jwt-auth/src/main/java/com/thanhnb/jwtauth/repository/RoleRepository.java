@@ -1,5 +1,6 @@
 package com.thanhnb.jwtauth.repository;
 
+import com.thanhnb.jwtauth.models.Privileges;
 import com.thanhnb.jwtauth.models.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
