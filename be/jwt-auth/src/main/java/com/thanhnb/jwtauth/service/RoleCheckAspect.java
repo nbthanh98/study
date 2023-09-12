@@ -4,22 +4,16 @@ import com.thanhnb.jwtauth.exception.CustomException;
 import com.thanhnb.jwtauth.models.*;
 import com.thanhnb.jwtauth.repository.PrivilegeRepository;
 import com.thanhnb.jwtauth.repository.RoleRepository;
-import com.thanhnb.jwtauth.repository.UserRepository;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 
-import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,8 +27,8 @@ public class RoleCheckAspect {
     @Before("@annotation(com.thanhnb.jwtauth.models.Allowed)")
     public void before(JoinPoint joinPoint) {
         MethodSignature ms = (MethodSignature) joinPoint.getSignature();
-        RoleEnum[] expectedRoles = ms.getMethod().getAnnotation(Allowed.class).roles();
-        PrivilegeEnum[] expectedPrivileges = ms.getMethod().getAnnotation(Allowed.class).privileges();
+        RoleEnum[] expectedRoles = ms.getMethod().getAnnotation(ApiSecure.class).requiredRoles();
+        PrivilegeEnum[] expectedPrivileges = ms.getMethod().getAnnotation(ApiSecure.class).requiredPrivileges();
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<Role> userRoles = roleRepository.loadRolesOfUserBy(userDetails.getUsername());

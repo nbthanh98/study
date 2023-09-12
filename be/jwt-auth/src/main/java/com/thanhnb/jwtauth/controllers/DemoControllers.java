@@ -1,6 +1,6 @@
 package com.thanhnb.jwtauth.controllers;
 
-import com.thanhnb.jwtauth.models.Allowed;
+import com.thanhnb.jwtauth.models.ApiSecure;
 import com.thanhnb.jwtauth.models.PrivilegeEnum;
 import com.thanhnb.jwtauth.models.RoleEnum;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/protected")
 public class DemoControllers {
 
-    @Allowed(roles = RoleEnum.ADMIN, privileges = PrivilegeEnum.READ)
+    @ApiSecure(requiredRoles = RoleEnum.ADMIN, requiredPrivileges = PrivilegeEnum.READ)
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public String test() {
         return "test";

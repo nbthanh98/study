@@ -7,9 +7,9 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface Allowed {
+public @interface ApiSecure {
 
-    RoleEnum[] roles();
+    RoleEnum[] requiredRoles();
 
-    PrivilegeEnum[] privileges();
+    PrivilegeEnum[] requiredPrivileges();
 }
