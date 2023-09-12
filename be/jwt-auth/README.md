@@ -1,4 +1,5 @@
- 
+## Components
+
 1. **Authentication Filter**: It's a filter in the FilterChain which detects an authentication attempt and forward it to authenticationManager.
 2. **Authentication**: This component specifies the type of authentication to be conducted. Its is an interface. It's implementation specifies the type of `Authentication`. For example, UsernamePasswordAuthenticationToken is an implementation of the Authentication interface which specifies that the user wants to authenticate using a username and password.
 3. **Authentication Manager**: Việc chính của ông này là gọi authenticate() đúng với `AuthenticatonProvider` hỗ trợ. Một application có thể có nhiều `AuthenProvider`, VD: LdapAuthenticationProvider, OpenIDAuthenticationProvider,.. Ông _Authentication Manager_ sẽ quyết định AuthenticationProvider nào bằng cách gọi hàm support(), nếu hàm support() của AuthenticationProvider nào trả về true thì nó sẽ được sử dụng để xử lý việc authentication.
