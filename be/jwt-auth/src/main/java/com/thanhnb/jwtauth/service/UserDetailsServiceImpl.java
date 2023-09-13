@@ -1,11 +1,13 @@
 package com.thanhnb.jwtauth.service;
 
+import com.thanhnb.jwtauth.exception.CustomException;
 import com.thanhnb.jwtauth.models.Role;
 import com.thanhnb.jwtauth.models.User;
 import com.thanhnb.jwtauth.models.UserPrincipal;
 import com.thanhnb.jwtauth.repository.RoleRepository;
 import com.thanhnb.jwtauth.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -29,7 +31,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username);
         if (Objects.isNull(user)) {
-            // throw user not found!
+            throw new CustomException("user not found");
         }
         List<Role> roles = roleRepository.loadRolesOfUserBy(username);
         UserPrincipal userPrincipal = new UserPrincipal();

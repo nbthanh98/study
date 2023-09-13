@@ -24,7 +24,7 @@ public class RoleCheckAspect {
     @Autowired private RoleRepository roleRepository;
     @Autowired private PrivilegeRepository privilegeRepository;
 
-    @Before("@annotation(com.thanhnb.jwtauth.models.Allowed)")
+    @Before("@annotation(com.thanhnb.jwtauth.models.ApiSecure)")
     public void before(JoinPoint joinPoint) {
         MethodSignature ms = (MethodSignature) joinPoint.getSignature();
         RoleEnum[] expectedRoles = ms.getMethod().getAnnotation(ApiSecure.class).requiredRoles();

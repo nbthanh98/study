@@ -1,6 +1,7 @@
 package com.thanhnb.jwtauth.configs;
 
 import com.thanhnb.jwtauth.filter.JwtAuthenticationFilter;
+import com.thanhnb.jwtauth.service.CustomAuthProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,7 +28,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired private JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
@@ -37,9 +38,19 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
         return super.authenticationManagerBean();
     }
 
+    // su dung
+    @Bean
+    public CustomAuthProvider authProvider() {
+        return new CustomAuthProvider();
+    }
+
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+        auth
+                // su dung CustomAuthProvider
+                .authenticationProvider(authProvider())
+                .userDetailsService(userDetailsService)
+                .passwordEncoder(passwordEncoder());
     }
 
     @Override
