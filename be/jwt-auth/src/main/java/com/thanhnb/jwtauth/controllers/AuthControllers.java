@@ -40,6 +40,7 @@ public class AuthControllers {
         Authentication authentication = authenticationManager.authenticate(authenticationToken);
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.genToken(authentication);
+        log.info("[AuthControllers][authWithCustomAuthProvider] username={} login success", login.getUsername());
         return ResponseEntity.ok(jwt);
     }
 }

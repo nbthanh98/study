@@ -10,3 +10,25 @@ services:
       MYSQL_ROOT_PASSWORD: root
     ports:
       - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  keycloak:
+    image: jboss/keycloak:16.1.0
+    environment:
+      KEYCLOAK_USER: admin_user
+      KEYCLOAK_PASSWORD: admin_password
+      DB_VENDOR: mysql
+      DB_ADDR: db
+      DB_PORT: 3306
+      DB_USER: keycloak_user
+      DB_PASSWORD: keycloak_password
+      DB_DATABASE: keycloak_db
+    ports:
+      - "8088:8080"
+    depends_on:
+      - db
+
+volumes:
+  mysql_data:
+    driver: local

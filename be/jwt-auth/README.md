@@ -24,6 +24,10 @@
 CREATE DATABASE jwt_auth;
 CREATE USER 'jwt_auth'@'%';
 GRANT ALL PRIVILEGES ON jwt_auth.* To 'jwt_auth'@'%' IDENTIFIED BY 'jwtAuth';
+
+CREATE DATABASE keycloak_db;
+CREATE USER 'keycloak_user'@'%';
+GRANT ALL PRIVILEGES ON keycloak_db.* To 'keycloak_user'@'%' IDENTIFIED BY 'keycloak_password';
 ```
 
 ## Nguồn
