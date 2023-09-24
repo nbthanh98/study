@@ -1,10 +1,8 @@
-package com.thanhnb.jwtauth.repository;
+package com.thanhnb.jwtauth.repository.jwt;
 
-import com.thanhnb.jwtauth.models.Privileges;
-import com.thanhnb.jwtauth.models.Role;
+import com.thanhnb.jwtauth.models.jwt.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

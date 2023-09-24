@@ -1,6 +1,6 @@
-package com.thanhnb.jwtauth.repository;
+package com.thanhnb.jwtauth.repository.jwt;
 
-import com.thanhnb.jwtauth.models.User;
+import com.thanhnb.jwtauth.models.jwt.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

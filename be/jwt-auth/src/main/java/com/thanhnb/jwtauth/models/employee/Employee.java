@@ -1,4 +1,4 @@
-package com.thanhnb.jwtauth.models;
+package com.thanhnb.jwtauth.models.employee;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,12 +12,10 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "privileges")
-public class Privileges {
-
+@Table(name = "employee")
+public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private String code;
 }

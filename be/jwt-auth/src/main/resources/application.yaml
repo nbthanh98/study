@@ -3,13 +3,26 @@ server:
 
 spring:
   datasource:
-    driverClassName: com.mysql.jdbc.Driver
-    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/jwt_auth}
-    username: ${MYSQL_USERNAME:jwt_auth}
-    password: ${MYSQL_PASSWORD:jwtAuth}
+    company:
+      url: ${MYSQL_URL:jdbc:mysql://localhost:3306/company}
+      driverClassName: com.mysql.jdbc.Driver
+      username: ${MYSQL_USERNAME:company}
+      password: ${MYSQL_PASSWORD:company}
+      platform: mysql
+    employee:
+      url: ${MYSQL_URL:jdbc:mysql://localhost:3306/employee}
+      driverClassName: com.mysql.jdbc.Driver
+      username: ${MYSQL_USERNAME:employee}
+      password: ${MYSQL_PASSWORD:employee}
+      platform: mysql
+    jwt:
+      driverClassName: com.mysql.jdbc.Driver
+      url: ${MYSQL_URL:jdbc:mysql://localhost:3306/jwt_auth}
+      username: ${MYSQL_USERNAME:jwt_auth}
+      password: ${MYSQL_PASSWORD:jwtAuth}
   jpa:
-    hibernate.ddl-auto: update
-    generate-ddl: true
+    hibernate.ddl-auto: none
+    generate-ddl: false
     show-sql: true
 
 app:
@@ -20,6 +33,7 @@ backend-security:
   enabled: ${SECURITY_ENABLE:true}
   api-matcher:
     - /auth/**
+    - /public/**
   cors:
     allowed-origins: ${ALLOWED_ORIGINS:*}
     allowed-headers: ${ALLOWED_HEADER:*}

@@ -1,4 +1,4 @@
-package com.thanhnb.jwtauth.models;
+package com.thanhnb.jwtauth.models.jwt;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,16 +12,16 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "roles_privileges")
-public class RolesPrivileges {
+@Table(name = "users")
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private String fullName;
+    private String email;
 
-    @Column(name = "role_id")
-    private Integer roleId;
-
-    @Column(name = "privilege_id")
-    private Integer privilegeId;
+    @Column(name = "user_name")
+    private String username;
+    private String password;
 }

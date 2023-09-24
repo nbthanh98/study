@@ -1,4 +1,4 @@
-package com.thanhnb.jwtauth.models;
+package com.thanhnb.jwtauth.models.jwt;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

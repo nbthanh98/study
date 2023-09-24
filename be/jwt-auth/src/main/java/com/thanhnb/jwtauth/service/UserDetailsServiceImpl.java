@@ -1,13 +1,12 @@
 package com.thanhnb.jwtauth.service;
 
 import com.thanhnb.jwtauth.exception.CustomException;
-import com.thanhnb.jwtauth.models.Role;
-import com.thanhnb.jwtauth.models.User;
-import com.thanhnb.jwtauth.models.UserPrincipal;
-import com.thanhnb.jwtauth.repository.RoleRepository;
-import com.thanhnb.jwtauth.repository.UserRepository;
+import com.thanhnb.jwtauth.models.jwt.Role;
+import com.thanhnb.jwtauth.models.jwt.User;
+import com.thanhnb.jwtauth.models.jwt.UserPrincipal;
+import com.thanhnb.jwtauth.repository.jwt.RoleRepository;
+import com.thanhnb.jwtauth.repository.jwt.UserRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

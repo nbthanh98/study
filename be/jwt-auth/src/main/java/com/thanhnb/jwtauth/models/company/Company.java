@@ -1,5 +1,4 @@
-package com.thanhnb.jwtauth.models;
-
+package com.thanhnb.jwtauth.models.company;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,12 +12,10 @@ import javax.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "roles")
-public class Role {
-
+@Table(name = "company")
+public class Company {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;
-    private String code;
 }

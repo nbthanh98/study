@@ -1,7 +1,6 @@
 package com.thanhnb.jwtauth.controllers;
 
-import com.thanhnb.jwtauth.models.LoginDTO;
-import com.thanhnb.jwtauth.service.CustomAuthProvider;
+import com.thanhnb.jwtauth.models.jwt.LoginDTO;
 import com.thanhnb.jwtauth.service.JwtProvider;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

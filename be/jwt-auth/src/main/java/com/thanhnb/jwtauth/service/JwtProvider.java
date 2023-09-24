@@ -1,6 +1,6 @@
 package com.thanhnb.jwtauth.service;
 
-import com.thanhnb.jwtauth.models.UserPrincipal;
+import com.thanhnb.jwtauth.models.jwt.UserPrincipal;
 import io.jsonwebtoken.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;

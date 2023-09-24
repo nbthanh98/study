@@ -1,9 +1,9 @@
 package com.thanhnb.jwtauth.service;
 
 import com.thanhnb.jwtauth.exception.CustomException;
-import com.thanhnb.jwtauth.models.*;
-import com.thanhnb.jwtauth.repository.PrivilegeRepository;
-import com.thanhnb.jwtauth.repository.RoleRepository;
+import com.thanhnb.jwtauth.models.jwt.*;
+import com.thanhnb.jwtauth.repository.jwt.PrivilegeRepository;
+import com.thanhnb.jwtauth.repository.jwt.RoleRepository;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -24,7 +24,7 @@ public class RoleCheckAspect {
     @Autowired private RoleRepository roleRepository;
     @Autowired private PrivilegeRepository privilegeRepository;
 
-    @Before("@annotation(com.thanhnb.jwtauth.models.ApiSecure)")
+    @Before("@annotation(com.thanhnb.jwtauth.models.jwt.ApiSecure)")
     public void before(JoinPoint joinPoint) {
         MethodSignature ms = (MethodSignature) joinPoint.getSignature();
         RoleEnum[] expectedRoles = ms.getMethod().getAnnotation(ApiSecure.class).requiredRoles();

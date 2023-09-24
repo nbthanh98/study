@@ -1,4 +1,4 @@
-package com.thanhnb.jwtauth.models;
+package com.thanhnb.jwtauth.models.jwt;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
