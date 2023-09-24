@@ -13,7 +13,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
-
+//https://www.techgeeknext.com/spring-boot/spring-boot-multiple-datasources-jpa
 @Configuration
 @EnableJpaRepositories(
         basePackages = "com.thanhnb.jwtauth.repository.company",
