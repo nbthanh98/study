@@ -11,7 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/protected")
 public class DemoControllers {
 
-    @ApiSecure(requiredRoles = RoleEnum.ADMIN, requiredPrivileges = {PrivilegeEnum.READ, PrivilegeEnum.VIEW})
+    @ApiSecure(
+            requiredRoles = RoleEnum.ADMIN,
+            requiredPrivileges = {
+                    PrivilegeEnum.READ,
+                    PrivilegeEnum.VIEW
+            })
     @RequestMapping(value = "/test", method = RequestMethod.GET)
     public String test() {
         return "test";

@@ -15,3 +15,13 @@ spring:
 app:
   jwtSecret: J81rCZNLDq
   jwtExpirationInMs: 18000
+
+backend-security:
+  enabled: ${SECURITY_ENABLE:true}
+  api-matcher:
+    - /auth/**
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:*}
+    allowed-headers: ${ALLOWED_HEADER:*}
+    allowed-methods: ${ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
+    max-age: ${MAX_AGE:3600}
