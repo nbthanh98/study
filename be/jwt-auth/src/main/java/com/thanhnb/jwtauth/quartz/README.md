@@ -170,3 +170,4 @@ commit;
 ```
 
 https://github.com/javabypatel/spring-boot-quartz-demo/blob/master/src/main/resources/data.sql
+https://medium.com/@manvendra.singh_58589/introduction-to-quartz-scheduling-af9b01708c24
