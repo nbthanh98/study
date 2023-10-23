@@ -12,6 +12,33 @@ spring:
     generate-ddl: true
     show-sql: true
 
+# QUARTZ JOBS
+  quartz:
+    job-store-type: jdbc
+    jdbc:
+      initialize-schema: never
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceName: quartz-demo-app
+            instanceId: AUTO
+            instanceIdGenerator:
+              class: com.thanhnb.jwtauth.quartz.configs.CustomQuartzInstanceIdGenerator
+          threadPool:
+            threadCount: 20
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            useProperties: true
+            misfireThreshold: 60000
+            tablePrefix: QRTZ_
+            isClustered: true
+          plugin:
+            shutdownHook:
+              class: org.quartz.plugins.management.ShutdownHookPlugin
+              cleanShutdown: TRUE
+
 app:
   jwtSecret: J81rCZNLDq
   jwtExpirationInMs: 18000
@@ -20,6 +47,7 @@ backend-security:
   enabled: ${SECURITY_ENABLE:true}
   api-matcher:
     - /auth/**
+    - /scheduler/**
   cors:
     allowed-origins: ${ALLOWED_ORIGINS:*}
     allowed-headers: ${ALLOWED_HEADER:*}
