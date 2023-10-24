@@ -17,6 +17,7 @@ public class SimpleJob extends QuartzJobBean implements InterruptableJob {
 
     @Override
     protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
-        System.out.println("[SimpleJob][executeInternal] date=" + LocalDateTime.now() + " hello world.");
+        String jobKey = context.getJobDetail().getKey().getName();
+        System.out.println("[SimpleJob][executeInternal] start job=" + jobKey + " date=" + LocalDateTime.now() + " hello world.");
     }
 }

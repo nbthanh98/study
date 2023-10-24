@@ -15,12 +15,12 @@ public interface JobService {
 
     boolean unScheduleJob(String jobName);
     boolean deleteJob(String jobName);
-    boolean pauseJob(String jobName);
-    boolean resumeJob(String jobName);
+    boolean pauseJob(String jobName, String groupKey);
+    boolean resumeJob(String jobName, String groupKey);
     boolean startJobNow(String jobName);
-    boolean isJobRunning(String jobName);
-    List<Map<String, Object>> getAllJobs();
+    boolean isJobRunning(String jobName, String groupKey);
+    List<Map<String, Object>> getAllJobs(String groupKey);
     boolean isJobWithNamePresent(String jobName);
-    String getJobState(String jobName);
+    String getJobState(String jobName, String groupKey);
     boolean stopJob(String jobName);
 }

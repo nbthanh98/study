@@ -15,7 +15,7 @@ public class JobsListener implements JobListener {
 
     @Override
     public void jobToBeExecuted(JobExecutionContext context) {
-        System.out.println("J[JobsListener][jobToBeExecuted] obsListener.jobToBeExecuted()");
+        System.out.println("[JobsListener][jobToBeExecuted] obsListener.jobToBeExecuted()");
     }
 
     @Override
