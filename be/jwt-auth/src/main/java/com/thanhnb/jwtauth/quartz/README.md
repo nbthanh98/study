@@ -1,3 +1,43 @@
+
+Quartz Intro
+
+![2023-10-29_21-19.png](imgs%2F2023-10-29_21-19.png)
+
+- Job: Tis repersents the actual business logic to be executed, such as sending SMS, email, accessing database, data synchronization, and so on.
+  - JobDetail: An implementation class of Job interface, created by **JobBuilder** to encapsulate the specific definition od the task.
+  - JobDataMap: An integration of a Map that stores additional information for the JobDetail using key-value pairs.
+  - JobStore: Component này được sử dụng để lưu trũ các thông tin có quan hệ với tasks và triggers, như: taskName, counts, status. Quartz cung cấp hai cách để store task: in-memory(RAMJobStore) and in database (JDBCJobStore).
+- Trigger: Triggers thì define khi nào? và bằng cách nào? để các job sẽ thực hiện. Triggers sẽ mô tả: conditions, execution times, internals, end times, and more. There are four major types of triggers: SimpleTriggers (simple triggers), CronTrigger (Cron expression trigger), DateInteralTrigger(date triggers), and CalendarIntervalTrigger(calendar trigger).
+- Scheduler: The scheduler responsible for starting trigger to execute jobs. It manages the execution of jobs based on the specified trigger condition and time.
+
+### Job
+Job là một interface định nghĩa duy nhất một hàm `execute()`. Khi tạo một specific task classes, cần implement Job interface hoặc QuartzJobBean (vì QuartzJobBean cũng implement Job interface). Có thẻ sử dụng **JobBuilder** để đóng gói specific task class into JobDetail. which is then managed by the Scheduler. Each JobDetail has a unique identity based on its name and group.
+
+### JobDetail
+The purpose of JobDetail is to bind a Job. It represents an instance of task and allow to add various extension parameters to the job.
+
+Main fields:
+ - name: Task name.
+ - group: Task group (default group is DEFAULT).
+ - jobClass: Class định nghĩa logic của task (class implement QuartzJobBean or Job), giống như class SimpleJob.class
+ - JobDataMap: Các tham số có thẻ truyền vào Task. Cả JobDetail và Trigger đều có thể sử dụng JobDataMap to set params or information.
+
+Each time the Scheduler schedules and executes a Job. it first retrieves the corresoinding Job, create an instance of that Job, and then executes the business logic inside `execute()` method.
+
+**Why is it designed as JobDetail + Job, instead of just using Job directly?** 
+
+### JobExecutionContext
+- When the Scheduler invokes a job, it passes the JobExecutionContext to execute() method in the Job.
+- Jobs can access the runtime environment of Quartz and their own specific data though the JobExecutionContext object.
+
+### Trigger (Định nghĩa Job đc chạy khi nào? và cách thức thực hiện Job?)
+Có 4 loại trigger in Quartz:
+- **SimpleTrigger**: Hỗ trợ việc define interval between task execution. Có thể define các rules theo 2 cách: định nghĩa số lần lặp lại (repeat count) hoặc define startTime and endTime. 
+- **CronTrigger**: Hỗ trợ trigger dựa vào cronExpression.
+
+###
+https://levelup.gitconnected.com/distributed-timed-task-solution-quartz-8911f4e7d598
+
 ```sql
 #
 # Quartz seems to work best with the driver mm.mysql-2.0.7-bin.jar
