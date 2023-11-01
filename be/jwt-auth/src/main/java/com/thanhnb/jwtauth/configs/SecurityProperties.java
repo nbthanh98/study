@@ -1,5 +1,6 @@
 package com.thanhnb.jwtauth.configs;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -19,6 +20,9 @@ public class SecurityProperties {
     private Cors cors;
     private boolean enabled;
     private List<String> apiMatcher;
+
+    @JsonProperty(value = "jwt")
+    private JwtConfigs jwtConfigs;
 
     public CorsConfiguration getCorsConfiguration() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -40,5 +44,11 @@ public class SecurityProperties {
         private List<String> exposedHeaders;
         private Boolean allowCredentials;
         private Long maxAge;
+    }
+    @Getter
+    @Setter
+    public static class JwtConfigs {
+        private String jwtSecret;
+        private long jwtExpirationInMs;
     }
 }
