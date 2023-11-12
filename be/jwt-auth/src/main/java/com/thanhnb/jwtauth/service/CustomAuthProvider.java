@@ -12,13 +12,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+/**
+ * @author thanhnb
+ */
 @Slf4j
 @Component
 public class CustomAuthProvider implements AuthenticationProvider {
-
     @Autowired private PasswordEncoder passwordEncoder;
     @Autowired private UserDetailsService userDetailsService;
-
     /**
      *
      * @param authentication

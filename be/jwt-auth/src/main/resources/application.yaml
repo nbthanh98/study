@@ -53,7 +53,6 @@ backend-security:
     allowed-headers: ${ALLOWED_HEADER:*}
     allowed-methods: ${ALLOWED_METHODS:GET,POST,PUT,PATCH,DELETE,OPTIONS}
     max-age: ${MAX_AGE:3600}
-
   jwt:
     jwtSecret: ${JWT_SECRET:J81rCZNLDq}
     jwtExpirationInMs: ${JWT_EXPIRATION_IN_MS:18000}

@@ -9,6 +9,9 @@ import org.springframework.scheduling.quartz.QuartzJobBean;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+/**
+ * @author thanhnb
+ */
 public class SimpleJob extends QuartzJobBean implements InterruptableJob {
     @Override
     public void interrupt() throws UnableToInterruptJobException {
